@@ -8,7 +8,7 @@ const options: ApexOptions = {
     type: "donut",
   },
   colors: ["#3C50E0", "#6577F3", "#8FD0EF"],
-  labels: ["Products", "Blogs", "Events"],
+  labels: ["Products", "Blogs", "Users"],
   legend: {
     show: false,
     position: "bottom",
@@ -47,12 +47,12 @@ const options: ApexOptions = {
 const ChartThree: React.FC<{
   products: number;
   blogs: number;
-  events: number;
-}> = ({ products, blogs, events }) => {
+  users: number;
+}> = ({ products, blogs, users }) => {
   const series = [
-    Number(((products / (products + blogs + events)) * 100).toFixed(2)),
-    Number(((blogs / (products + blogs + events)) * 100).toFixed(2)),
-    Number(((events / (products + blogs + events)) * 100).toFixed(2)),
+    Number(((products / (products + blogs + users)) * 100).toFixed(2)),
+    Number(((blogs / (products + blogs + users)) * 100).toFixed(2)),
+    Number(((users / (products + blogs + users)) * 100).toFixed(2)),
   ];
   const legendData = [
     {
@@ -66,8 +66,8 @@ const ChartThree: React.FC<{
       color: "#6577F3",
     },
     {
-      label: "Events",
-      value: events,
+      label: "Users",
+      value: users,
       color: "#8FD0EF",
     },
   ];

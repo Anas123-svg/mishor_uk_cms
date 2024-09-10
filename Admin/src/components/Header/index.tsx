@@ -55,7 +55,7 @@ const Header = (props: {
             </button>
           </div>
           <h1 className="text-2xl font-bold text-black dark:text-white">
-            Mothorx
+            Mishor
           </h1>
         </div>
         <div className="flex items-center gap-3">

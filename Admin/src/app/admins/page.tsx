@@ -59,8 +59,6 @@ const Admins = () => {
     permissions: {
       Customers: false,
       Products: false,
-      Blogs: false,
-      Events: false,
       Orders: false,
     },
     created_at: "",

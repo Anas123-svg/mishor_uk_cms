@@ -165,7 +165,7 @@ const ECommerce: React.FC = () => {
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <ChartOne orders={orders} />
-        <ChartThree products={products} blogs={blogs} events={events} />
+        <ChartThree products={products} blogs={blogs} users={users} />
       </div>
     </div>
   );

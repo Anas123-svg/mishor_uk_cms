@@ -19,8 +19,6 @@ type User = {
 type Permissions = {
   Customers: Boolean;
   Products: Boolean;
-  Blogs: Boolean;
-  Events: Boolean;
   Orders: Boolean;
 };
 

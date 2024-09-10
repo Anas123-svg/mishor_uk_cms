@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Mothorx Admin",
-  description: "Mothorx Admin Dashboard",
+  title: "Dashboard | Mishor Admin",
+  description: "Mishor Admin Dashboard",
 };
 
 export default function Home() {
