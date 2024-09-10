@@ -5,6 +5,25 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController; 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
+
+
+
+
+
+
+
+
+
+Route::post('register', [UserController::class, 'register']);
+Route::post('login', [UserController::class, 'login']);
+Route::middleware('auth:sanctum')->post('logout', [UserController::class, 'logout']);
+Route::middleware('auth:sanctum')->get('user', [UserController::class, 'showByToken']);
+Route::middleware('auth:sanctum')->put('user/update', [UserController::class, 'updateByToken']);
+Route::middleware('auth:sanctum')->get('users', [UserController::class, 'index']);
+Route::middleware('auth:sanctum')->put('user/{id}', [UserController::class, 'updateById']);
+Route::middleware('auth:sanctum')->delete('user/{id}', [UserController::class, 'destroy']);
 
 Route::get('/products/count', [ProductController::class, 'getProductCount']);
 
@@ -21,7 +40,15 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);   // Show a
 Route::put('/categories/{id}', [CategoryController::class, 'update']); // Update a specific category
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']); // Delete a specific category
 
+//orders
+Route::get('orders', [OrderController::class, 'index']);
+Route::post('orders', [OrderController::class, 'store']);
+Route::get('orders/{id}', [OrderController::class, 'show']);
+Route::put('orders/{id}', [OrderController::class, 'update']);
+Route::delete('orders/{id}', [OrderController::class, 'destroy']);
+Route::get('orders', [OrderController::class, 'index']);
 
+Route::get('orders/count', [OrderController::class, 'getOrderCount']);
 
 
 

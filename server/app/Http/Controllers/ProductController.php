@@ -61,15 +61,15 @@ class ProductController extends Controller
             'discounted_price' => 'sometimes|numeric',
             'in_stock' => 'sometimes|boolean',
             'in_stock_quantity' => 'sometimes|integer|min:0',
-            'category_id' => 'nullable|exists:categories,id', 
-            'images' => 'nullable|array',
-            'images.*' => 'nullable|string',
+            'category_id' => 'sometimes|exists:categories,id', 
+            'images' => 'sometimes|array',
+            'images.*' => 'sometimes|string',
         ]);
 
         $product->update($validated);
 
-        $product->images()->delete();
         if ($request->has('images')) {
+            $product->images()->delete();
             foreach ($request->images as $imageName) {
                 $product->images()->create(['image_path' => $imageName]);
             }
