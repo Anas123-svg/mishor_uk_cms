@@ -80,6 +80,7 @@ const Products = () => {
     price: 0,
     discounted_price: 0,
     in_stock: 1,
+    stock_quantity: 0,
     images: [],
   };
 
@@ -105,6 +106,7 @@ const Products = () => {
       formData.category > 0 &&
       formData.price > 0 &&
       formData.in_stock >= 0 &&
+      formData.stock_quantity >= 0 && // Check stock_quantity validity
       formData.images.length > 0
     );
   };
@@ -126,6 +128,8 @@ const Products = () => {
           discounted_price: formData.discounted_price,
           category_id: formData.category,
           in_stock: formData.in_stock,
+          in_stock_quantity:
+            formData.in_stock === 1 ? formData.stock_quantity : 0,
           images: formData.images,
         });
         toast.success("Product updated successfully");
@@ -147,6 +151,8 @@ const Products = () => {
           discounted_price: formData.discounted_price,
           category_id: formData.category,
           in_stock: formData.in_stock,
+          in_stock_quantity:
+            formData.in_stock === 1 ? formData.stock_quantity : 0,
           images: formData.images,
         });
         toast.success("Product added successfully");
@@ -280,7 +286,6 @@ const Products = () => {
                           type="number"
                           id="price"
                           name="price"
-                          pattern="[0-9]*"
                           value={formData.price}
                           onChange={(e) =>
                             setFormData({
@@ -336,6 +341,32 @@ const Products = () => {
                         <option value={0}>No</option>
                       </select>
                     </div>
+
+                    {/* Conditionally render stock_quantity if in_stock is 1 (Yes) */}
+                    {formData.in_stock === 1 && (
+                      <div>
+                        <label
+                          htmlFor="stock_quantity"
+                          className="block text-sm font-medium text-white dark:text-white"
+                        >
+                          Stock Quantity
+                        </label>
+                        <input
+                          type="number"
+                          id="stock_quantity"
+                          name="stock_quantity"
+                          value={formData.stock_quantity}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              stock_quantity: parseInt(e.target.value),
+                            })
+                          }
+                          className="w-full rounded border border-stroke bg-gray px-4.5 py-2 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    )}
+
                     <div>
                       <label
                         htmlFor="images"
@@ -352,6 +383,7 @@ const Products = () => {
                       />
                     </div>
                   </div>
+
                   <button
                     type="submit"
                     onClick={handleSubmit}
@@ -364,29 +396,33 @@ const Products = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-9 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
+          <div className="grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
             <div className="col-span-3 flex items-center">
               <p className="font-medium">Product Name</p>
             </div>
             <div className="col-span-2 hidden items-center sm:flex">
               <p className="font-medium">Category</p>
             </div>
-            <div className="col-span-1 flex items-center">
+            <div className="col-span-2 flex items-center">
               <p className="font-medium">Price</p>
             </div>
-            <div className="col-span-1 flex items-center whitespace-nowrap">
+            <div className="col-span-2 flex items-center whitespace-nowrap">
               <p className="font-medium">Discounted Price</p>
             </div>
-            <div className="col-span-2 flex items-center justify-end">
+            <div className="col-span-2 flex items-center whitespace-nowrap">
+              <p className="font-medium">Stock Quantity</p> {/* New Column */}
+            </div>
+            <div className="col-span-1 flex items-center justify-end">
               <p className="font-medium">Actions</p>
             </div>
           </div>
+
           {loading ? (
             <Loader className="h-[60vh]" />
           ) : filteredProducts.length > 0 ? (
             filteredProducts.map((product, key) => (
               <div
-                className="grid grid-cols-9 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
+                className="grid grid-cols-12 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
                 key={key}
               >
                 <div className="col-span-3 flex items-center">
@@ -408,21 +444,26 @@ const Products = () => {
                     {product.category}
                   </p>
                 </div>
-                <div className="col-span-1 flex items-center">
+                <div className="col-span-2 flex items-center">
                   <p className="text-sm text-black dark:text-white">
                     ${product.price}
                   </p>
                 </div>
-                <div className="col-span-1 flex items-center">
+                <div className="col-span-2 flex items-center">
                   <p className="text-red-500 text-sm">
                     {product.discounted_price
                       ? `$${product.discounted_price}`
                       : "N/A"}
                   </p>
                 </div>
-                <div className="col-span-2 flex items-center justify-end gap-2">
+                <div className="col-span-2 flex items-center">
+                  <p className="text-sm text-black dark:text-white">
+                    {product.in_stock_quantity}
+                  </p>
+                </div>
+                <div className="col-span-1 flex items-center justify-end gap-2">
                   <a
-                    href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/products/${product.category}/${product.id}`}
+                    // href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/products/${product.category}/${product.id}`}
                     target="_blank"
                     className="dark:text-white"
                   >
@@ -439,6 +480,7 @@ const Products = () => {
                         price: product.price as any,
                         discounted_price: product.discounted_price as any,
                         in_stock: product.in_stock as any,
+                        stock_quantity: product.in_stock_quantity as any,
                         images: product.images as any,
                       });
                       setEditMode(true);

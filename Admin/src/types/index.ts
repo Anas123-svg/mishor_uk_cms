@@ -40,6 +40,7 @@ type Product = {
   price: number;
   discounted_price: number | null;
   in_stock: number;
+  in_stock_quantity: number;
   images: string[];
   reviews: any[];
   category: string;
