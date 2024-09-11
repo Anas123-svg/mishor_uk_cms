@@ -49,6 +49,7 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: 2,
+
     curve: "straight",
   },
   grid: {
