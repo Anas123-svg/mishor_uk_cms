@@ -6,6 +6,49 @@ import CardDataStats from "../CardDataStats";
 import axios from "axios";
 import { BiDollar } from "react-icons/bi";
 
+const dummyOrders = [
+  {
+    created_at: "2023-01-12T00:00:00.000Z",
+    total_amount: 150,
+  },
+  {
+    created_at: "2023-02-05T00:00:00.000Z",
+    total_amount: 340,
+  },
+  {
+    created_at: "2023-03-18T00:00:00.000Z",
+    total_amount: 250,
+  },
+  {
+    created_at: "2023-04-23T00:00:00.000Z",
+    total_amount: 450,
+  },
+  {
+    created_at: "2023-05-09T00:00:00.000Z",
+    total_amount: 620,
+  },
+  {
+    created_at: "2023-06-17T00:00:00.000Z",
+    total_amount: 530,
+  },
+  {
+    created_at: "2023-07-14T00:00:00.000Z",
+    total_amount: 410,
+  },
+  {
+    created_at: "2023-08-22T00:00:00.000Z",
+    total_amount: 390,
+  },
+  {
+    created_at: "2023-09-06T00:00:00.000Z",
+    total_amount: 725,
+  },
+  {
+    created_at: "2023-10-11T00:00:00.000Z",
+    total_amount: 300,
+  },
+];
+
 const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
   ssr: false,
 });
@@ -84,19 +127,24 @@ const ECommerce: React.FC = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats
           title="Total Sales"
-          total={`$${
-            orders?.length &&
-            orders
-              .reduce(
-                (acc: any, order: any) => acc + parseFloat(order.total_amount),
-                0,
-              )
-              .toFixed(2)
-          }`}
+          // total={`$${
+          //   orders?.length &&
+          //   orders
+          //     .reduce(
+          //       (acc: any, order: any) => acc + parseFloat(order.total_amount),
+          //       0,
+          //     )
+          //     .toFixed(2)
+          // }`}
+          total="$1569"
         >
           <BiDollar className="fill-primary dark:fill-white" size={20} />
         </CardDataStats>
-        <CardDataStats title="Total Orders" total={orders.length.toString()}>
+        <CardDataStats
+          title="Total Orders"
+          // total={orders.length.toString()}
+          total="12"
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -138,7 +186,11 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total={users.toString()}>
+        <CardDataStats
+          title="Total Users"
+          // total={users.toString()}
+          total="23"
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -164,8 +216,8 @@ const ECommerce: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne orders={orders} />
-        <ChartThree products={products} blogs={blogs} users={users} />
+        <ChartOne orders={dummyOrders} />
+        <ChartThree products={products} blogs={10} users={23} />
       </div>
     </div>
   );

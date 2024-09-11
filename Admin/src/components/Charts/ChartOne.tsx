@@ -128,6 +128,7 @@ const getMonthlyOrders = (orders: any[], year: number) => {
 };
 
 const ChartOne: React.FC<{ orders: any[] }> = ({ orders }) => {
+  console.log(orders);
   const currentYear = dayjs().year();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
