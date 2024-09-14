@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import React from "react";
 
-const CLOUDINARY_UPLOAD_PRESET = "sd1xay79";
-const CLOUDINARY_CLOUD_NAME = "dlxtcvj93";
+const CLOUDINARY_UPLOAD_PRESET = "ml_default";
+const CLOUDINARY_CLOUD_NAME = "dewqsghdi";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
 export default function PhotosUploader({
