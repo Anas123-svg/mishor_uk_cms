@@ -32,7 +32,7 @@ const Navbar = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/category`
+        `${process.env.NEXT_PUBLIC_API_URL}/categories`
       );
       setCategories(response.data);
     } catch (error) {
@@ -52,12 +52,12 @@ const Navbar = () => {
   }, [user]);
 
   return (
-    <div className="top-0 z-50 fixed bg-white shadow-lg text-black border-b border-gray-200 px-6 md:px-16 lg:px-24 py-5 w-full flex items-center justify-between">
+    <div className="top-0 z-50 fixed bg-white shadow-lg text-black border-b border-gray-200 px-6 md:px-16 lg:px-24 py-3 w-full flex items-center justify-between">
       <Link href="/">
         <img
           src={logo.src}
           alt="logo"
-          className="w-12 hover:scale-105 transition-transform duration-300"
+          className="w-16 hover:scale-105 transition-transform duration-300"
         />
       </Link>
 
@@ -85,35 +85,18 @@ const Navbar = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute left-0 w-[550px]"
+              className="absolute left-0"
             >
-              <div className="mt-2 shadow-xl bg-white border border-gray-200 p-5 whitespace-nowrap w-full">
-                <div className="w-full flex flex-wrap gap-10">
-                  {categories.map((category, index) => (
-                    <div key={index} className="flex flex-col">
-                      <Link
-                        href={`/products/${category.name}`}
-                        className="border-b border-transparent hover:border-black transition duration-300 uppercase"
-                      >
-                        {category.name}
-                      </Link>
-                      <div className="mt-3 flex flex-col space-y-2">
-                        {category.subCategories.length > 0 &&
-                          category.subCategories.map(
-                            (subCategory, subIndex) => (
-                              <Link
-                                key={subIndex}
-                                href={`/products/${category.name}/${subCategory}`}
-                                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                              >
-                                {subCategory}
-                              </Link>
-                            )
-                          )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="mt-2 shadow-xl flex flex-col bg-white border border-gray-200 p-4 whitespace-nowrap w-full">
+                {categories.map((category, index) => (
+                  <Link
+                    key={index}
+                    href={`/products/${category.name}`}
+                    className="text-gray-600 hover:text-gray-900 transition-colors duration-300 my-2"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
               </div>
             </motion.div>
           )}

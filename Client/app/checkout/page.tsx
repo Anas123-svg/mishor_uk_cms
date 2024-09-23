@@ -76,9 +76,7 @@ const page = () => {
           phone: values.phone,
           order: items.map((item) => ({
             quantity: item.quantity,
-            product: item.product._id,
-            size: item.size,
-            color: item.color,
+            product: item.product.id,
           })),
           shippingAddress: {
             address: values.address,
@@ -111,7 +109,7 @@ const page = () => {
 
   return (
     <div className="px-8 md:px-16 lg:px-24 pt-28 pb-10 min-h-screen">
-      <div className="text-center mb-12">
+      <div className="text-center mb-5">
         <h1 className="text-3xl text-gray-900">Checkout</h1>
         <p className="mt-4 text-gray-700">
           Fill in your details to place your order. We will deliver it to you as
@@ -294,7 +292,7 @@ const page = () => {
           <h2 className="text-2xl font-mons mb-5">Your Cart</h2>
           {items.map((item) => (
             <div
-              key={item.product._id}
+              key={item.product.id}
               className="border border-black p-2 my-2 flex justify-between"
             >
               <div className="w-2/3">
@@ -303,22 +301,22 @@ const page = () => {
                   alt=""
                   className="w-20 h-20 object-cover float-left mr-3.5"
                 />
-                <h1 className="font-mons">{item.product.name}</h1>
-                <h1 className="text-xs">Size: {item.size.toUpperCase()}</h1>
-                <h1 className="text-xs">
-                  Color: {item.color[0].toUpperCase() + item.color.slice(1)}
-                </h1>
+                <h1 className="font-mons">{item.product.title}</h1>
                 <h1 className="text-xs">Qty: {item.quantity}</h1>
               </div>
               <span className="font-mons">
-                PKR {item.product.finalPrice.toLocaleString()}
+                £{" "}
+                {(item.product.discountedPrice
+                  ? item.product.discountedPrice
+                  : item.product.price
+                ).toLocaleString()}
               </span>
             </div>
           ))}
           <div className="mt-10">
             <div className="flex justify-between">
               <p>Subtotal</p>
-              <p>PKR {getTotalPrice().toLocaleString()}</p>
+              <p>£ {getTotalPrice().toLocaleString()}</p>
             </div>
             <div className="flex justify-between">
               <p>Delivery</p>
@@ -326,14 +324,14 @@ const page = () => {
                 {getTotalPrice() > 10000 ? (
                   <span className="font-semibold text-green-600">Free</span>
                 ) : (
-                  "PKR 300"
+                  "£ 300"
                 )}
               </p>
             </div>
             <div className="flex justify-between">
               <p>Total</p>
               <p>
-                PKR{" "}
+                £{" "}
                 {(
                   getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300)
                 ).toLocaleString()}{" "}

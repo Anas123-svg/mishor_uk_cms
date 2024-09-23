@@ -1,14 +1,30 @@
 import Link from "next/link";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import img from "@/assets/hero.png";
 
 const Hero = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.5;
+    }
+  }, []);
+
   return (
     <div className="h-dvh relative">
-      <img src={img.src} className="object-cover w-full h-full" />
+      {/* <img src={img.src} className="object-cover w-full h-full" /> */}
+      <video
+        ref={videoRef}
+        src="/video.mp4"
+        muted
+        autoPlay
+        loop
+        className="w-full h-full object-cover"
+      />
       <div className="absolute inset-0 bg-black opacity-60"></div>
       <div className="absolute inset-0 flex items-center px-6 md:px-16 lg:px-24 tracking-widest">
-        <div className="w-3/5">
+        <div className="w-3/5 mt-20">
           <h1 className="text-4xl font-bold text-white uppercase font-mons">
             EXPERT HEALTH AND SAFETY CONSULTANTS
           </h1>

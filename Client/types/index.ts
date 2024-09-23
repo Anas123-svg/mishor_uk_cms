@@ -1,8 +1,6 @@
 type Cart = {
   product: Product;
   quantity: number;
-  size: string;
-  color: string;
 };
 
 type Wishlist = {
@@ -10,16 +8,16 @@ type Wishlist = {
 };
 
 type User = {
-  _id: string;
+  id: string;
   email: string;
   password: string;
   name: string;
   phone: string;
   address: string;
-  cart: Cart[];
-  wishlist: Wishlist[];
-  createdAt: string;
-  updatedAt: string;
+  carts: Cart[];
+  wishlists: Wishlist[];
+  created_at: string;
+  updated_at: string;
 };
 
 type Review = {
@@ -34,30 +32,26 @@ type Review = {
 };
 
 type Product = {
-  _id: string;
-  name: string;
+  id: number;
+  title: string;
   price: number;
-  discount: number;
-  finalPrice: number;
+  discountedPrice: number;
   images: string[];
-  sizes: string[];
-  colors: string[];
   category: string;
-  subCategory: string;
   inStock: boolean;
+  inStockQuantity: number;
   description: string;
   reviews: Review[];
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type Category = {
-  _id: string;
+  id: number;
   name: string;
-  subCategories: string[];
-  products: number;
-  createdAt: string;
-  updatedAt: string;
+  products_count: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type Blog = {
@@ -119,11 +113,9 @@ type Order = {
 };
 
 type FAQ = {
-  _id: string;
+  id: number;
   question: string;
   answer: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
 type ContactInfo = {

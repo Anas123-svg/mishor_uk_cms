@@ -40,7 +40,7 @@ const WishlistComp = () => {
                 <div className="flex flex-col justify-between h-full pt-3 pb-10 overflow-scroll">
                   <div>
                     {wishlist.map((item: Wishlist) => (
-                      <WishlistItem key={item.product._id} item={item} />
+                      <WishlistItem key={item.product.id} item={item} />
                     ))}
                   </div>
                 </div>

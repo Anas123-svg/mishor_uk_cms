@@ -5,8 +5,8 @@ type WishlistStore = {
   wishlist: Wishlist[];
   initWishlist: (items: Wishlist[]) => void;
   addToWishlist: (item: Wishlist, token?: any) => void;
-  removeFromWishlist: (id: string, token?: any) => void;
-  inWishlist: (id: string) => boolean;
+  removeFromWishlist: (id: number, token?: any) => void;
+  inWishlist: (id: number) => boolean;
   clearWishlist: (token?: any) => void;
 };
 
@@ -19,7 +19,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
     let new_wishlist = get().wishlist;
     let found = false;
     new_wishlist.forEach((wishlist_item) => {
-      if (wishlist_item.product._id === item.product._id) {
+      if (wishlist_item.product.id === item.product.id) {
         found = true;
       }
     });
@@ -37,7 +37,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
   },
   removeFromWishlist: async (id, token) => {
     let new_wishlist = get().wishlist;
-    new_wishlist = new_wishlist.filter((item) => item.product._id !== id);
+    new_wishlist = new_wishlist.filter((item) => item.product.id !== id);
     await axios.put(
       `${process.env.NEXT_PUBLIC_API_URL}/user/update`,
       { wishlist: new_wishlist },
@@ -50,7 +50,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
   inWishlist: (id) => {
     let found = false;
     get().wishlist.forEach((wishlist_item) => {
-      if (wishlist_item.product._id === id) {
+      if (wishlist_item.product.id === id) {
         found = true;
       }
     });

@@ -17,7 +17,7 @@ const Grid = ({ products, loading }: Props) => {
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-20 my-10 min-h-screen">
         {products.map((product: Product) => (
-          <Card key={product._id} product={product} />
+          <Card key={product.id} product={product} />
         ))}
       </div>
     </div>

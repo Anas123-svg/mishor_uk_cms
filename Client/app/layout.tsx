@@ -27,8 +27,8 @@ export default function RootLayout({
 
   useEffect(() => {
     if (user) {
-      initCart(user.cart);
-      initWishlist(user.wishlist);
+      initCart(user.carts);
+      initWishlist(user.wishlists);
     }
   }, [user]);
 
@@ -54,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>GYMGear</title>
+        <title>Mishor</title>
         <link rel="icon" href="/logo.png" />
       </head>
 

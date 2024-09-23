@@ -38,14 +38,14 @@ const CartComp = () => {
               <div className="flex flex-col justify-between h-full pt-3 pb-10">
                 <div className="h-[70%] overflow-scroll scrollbar-none">
                   {items.map((item: Cart) => (
-                    <CartItem key={item.product._id} item={item} />
+                    <CartItem key={item.product.id} item={item} />
                   ))}
                 </div>
 
                 <div className="text-sm">
                   <div className="flex justify-between">
                     <p>Subtotal</p>
-                    <p>PKR {getTotalPrice().toLocaleString()}</p>
+                    <p>£ {getTotalPrice().toLocaleString()}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Delivery</p>
@@ -53,14 +53,14 @@ const CartComp = () => {
                       {getTotalPrice() > 1000 ? (
                         <span className="text-tertiary">Free</span>
                       ) : (
-                        "PKR 20"
+                        "£ 20"
                       )}
                     </p>
                   </div>
                   <div className="flex justify-between">
                     <p>Total</p>
                     <p>
-                      PKR{" "}
+                      £{" "}
                       {(
                         getTotalPrice() + (getTotalPrice() > 1000 ? 0 : 20)
                       ).toLocaleString()}

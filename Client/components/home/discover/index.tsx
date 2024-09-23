@@ -15,9 +15,10 @@ const Discover = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/filter?limit=6`
+        `${process.env.NEXT_PUBLIC_API_URL}/products`
       );
-      setProducts(response.data.products);
+      console.log(response.data);
+      setProducts(response.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -29,7 +30,7 @@ const Discover = () => {
       <h1 className="text-4xl text-center tracking-wider font-mons">
         Discover our latest products
       </h1>
-      <Grid products={products} loading={loading} />
+      <Grid products={products.slice(0, 3)} loading={loading} />
     </div>
   );
 };

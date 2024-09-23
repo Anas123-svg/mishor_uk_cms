@@ -5,10 +5,10 @@ type CartStore = {
   items: Cart[];
   initCart: (items: Cart[]) => void;
   addItem: (item: Cart, user: boolean, token?: any) => void;
-  removeItem: (id: string, user: boolean, token?: any) => void;
-  deleteItem: (id: string, user: boolean, token?: any) => void;
-  addQuantity: (id: string, user: boolean, token?: any) => void;
-  getItemQuantity: (id: string) => number;
+  removeItem: (id: number, user: boolean, token?: any) => void;
+  deleteItem: (id: number, user: boolean, token?: any) => void;
+  addQuantity: (id: number, user: boolean, token?: any) => void;
+  getItemQuantity: (id: number) => number;
   getTotalPrice: () => number;
   getTotalItems: () => number;
   clearCart: (user: boolean, token?: any) => void;
@@ -23,10 +23,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     let new_items = get().items;
     let found = false;
     new_items.forEach((cart_item) => {
-      if (
-        cart_item.product._id + cart_item.size + cart_item.color ===
-        item.product._id + item.size + item.color
-      ) {
+      if (cart_item.product.id === item.product.id) {
         found = true;
         cart_item.quantity++;
       }
@@ -52,21 +49,17 @@ export const useCartStore = create<CartStore>((set, get) => ({
     let new_items = get().items;
     let found = false;
     new_items.forEach((cart_item) => {
-      if (cart_item.product._id + cart_item.size + cart_item.color === id) {
+      if (cart_item.product.id === id) {
         found = true;
         if (cart_item.quantity > 1) {
           cart_item.quantity--;
         } else {
-          new_items = new_items.filter(
-            (item) => item.product._id + item.size + item.color !== id
-          );
+          new_items = new_items.filter((item) => item.product.id !== id);
         }
       }
     });
     if (!found) {
-      new_items = new_items.filter(
-        (item) => item.product._id + item.size + item.color !== id
-      );
+      new_items = new_items.filter((item) => item.product.id !== id);
     }
     set({ items: new_items });
     if (user) {
@@ -81,9 +74,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   },
   deleteItem: async (id, user, token) => {
     let new_items = get().items;
-    new_items = new_items.filter(
-      (item) => item.product._id + item.size + item.color !== id
-    );
+    new_items = new_items.filter((item) => item.product.id !== id);
     set({ items: new_items });
     if (user) {
       await axios.put(
@@ -98,9 +89,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   addQuantity: async (id, user, token) => {
     set((state) => ({
       items: state.items.map((i) =>
-        i.product._id + i.size + i.color === id
-          ? { ...i, quantity: i.quantity + 1 }
-          : i
+        i.product.id === id ? { ...i, quantity: i.quantity + 1 } : i
       ),
     }));
     if (user) {
@@ -116,7 +105,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   getItemQuantity: (id) => {
     let quantity = 0;
     get().items.forEach((item) => {
-      if (item.product._id + item.size + item.color === id) {
+      if (item.product.id === id) {
         quantity = item.quantity;
       }
     });
@@ -125,7 +114,10 @@ export const useCartStore = create<CartStore>((set, get) => ({
   getTotalPrice: () => {
     let total_price = 0;
     get().items.forEach((item) => {
-      total_price += item.product.finalPrice * item.quantity;
+      total_price +=
+        (item.product.discountedPrice
+          ? item.product.discountedPrice
+          : item.product.price) * item.quantity;
     });
     return total_price;
   },

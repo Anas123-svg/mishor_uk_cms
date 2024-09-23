@@ -40,20 +40,18 @@ const Login = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const { user, token, message } = await login(
-        values.email,
-        values.password
-      );
+      const { user, token } = await login(values.email, values.password);
       setUser(user);
       setToken(token);
-      toast.success(message || "Login successful");
+      toast.success("Login successful");
       router.push("/");
     } catch (error: any) {
-      if (error.response.status === 500)
-        toast.error(
-          "An error occurred while processing your request. Please try again later."
-        );
-      else toast.error(error.response.data.message);
+      if (error.response?.status === 401) {
+        toast.error("Invalid email or password");
+        return;
+      }
+      toast.error("Something went wrong, please try again");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
       form.reset();
@@ -61,8 +59,8 @@ const Login = () => {
   }
 
   return (
-    <div className="flex items-center justify-center flex-col min-h-screen px-8 md:px-16 lg:px-24 xl:px-32">
-      <h1 className="text-3xl font-semibold mb-8">
+    <div className="flex items-center justify-center flex-col min-h-screen px-6 md:px-12 lg:px-24">
+      <h1 className="text-4xl font-mons tracking-wide">
         Login to your{" "}
         <span className="text-white bg-primary px-2 italic">Account!</span>{" "}
       </h1>
@@ -111,12 +109,9 @@ const Login = () => {
             </div>
             <Button
               type="submit"
-              className=" rounded-none font-bold w-full bg-transparent hover:bg-transparent py-3 border border-black text-white  dark:border-white relative group transition duration-200"
+              className="rounded-none font-mons w-full bg-primary hover:bg-primary-hover py-3  text-white  dark:border-white relative transition duration-200"
             >
-              <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-95 group-hover:scale-y-75 transition-all duration-200" />
-              <span className="relative">
-                {isSubmitting ? "Submitting..." : "Login"}
-              </span>
+              {isSubmitting ? "Submitting..." : "Login"}
             </Button>
           </form>
         </Form>

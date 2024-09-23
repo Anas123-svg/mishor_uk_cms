@@ -292,7 +292,7 @@ const Profile = () => {
                         </p>
                         <p>
                           {item.quantity} x{" "}
-                          {item.product.price.toLocaleString()} = PKR{" "}
+                          {item.product.price.toLocaleString()} = £{" "}
                           {(
                             item.quantity * item.product.price
                           ).toLocaleString()}
@@ -303,7 +303,7 @@ const Profile = () => {
                   <div className="flex justify-between">
                     <h2 className="font-bold">Total</h2>
                     <h2 className="font-bold">
-                      PKR {order.totalPrice.toLocaleString()}
+                      £ {order.totalPrice.toLocaleString()}
                     </h2>
                   </div>
                   <div className="flex justify-between">
@@ -340,7 +340,7 @@ const Profile = () => {
                         <p>{item.product.name}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {item.product.price.toLocaleString()} = PKR{" "}
+                          {item.product.price.toLocaleString()} = £{" "}
                           {(
                             item.quantity * item.product.price
                           ).toLocaleString()}
@@ -351,7 +351,7 @@ const Profile = () => {
                   <div className="flex justify-between">
                     <h2 className="font-bold">Total</h2>
                     <h2 className="font-bold">
-                      PKR {order.totalPrice.toLocaleString()}
+                      £ {order.totalPrice.toLocaleString()}
                     </h2>
                   </div>
                   <div className="flex justify-between">

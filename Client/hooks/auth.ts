@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const login = async (email: string, password: string) => {
   const { data } = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/login`,
+    `${process.env.NEXT_PUBLIC_API_URL}/login`,
     {
       email,
       password,
@@ -14,7 +14,7 @@ export const login = async (email: string, password: string) => {
 
 export const register = async (values: object) => {
   const { data } = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/register`,
+    `${process.env.NEXT_PUBLIC_API_URL}/register`,
     values
   );
   localStorage.setItem("token", data.token);
@@ -22,6 +22,16 @@ export const register = async (values: object) => {
 };
 
 export const logout = async () => {
+  await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/logout`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+
   localStorage.removeItem("token");
   return null;
 };
@@ -32,14 +42,11 @@ export const loginBack = async () => {
     return null;
   }
 
-  const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/user`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return { user: data, token };
 };

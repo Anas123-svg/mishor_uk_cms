@@ -11,17 +11,13 @@ import logo from "@/assets/logo.png";
 const Footer = () => {
   return (
     <footer className="bg-secondary text-gray-100 pt-16 pb-10 relative">
-      <div className="px-6 md:px-16 lg:px-24 grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div className="px-6 md:px-16 lg:px-24 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Logo and Brief Description */}
         <div>
           <Link href="/">
-            <img src={logo.src} alt="logo" className="w-36" />
+            <img src={logo.src} alt="logo" className="w-32" />
           </Link>
-          <p className="mt-6 text-gray-400 leading-relaxed">
-            Elevating your fitness game with high-performance gym wear designed
-            for comfort, durability, and style.
-          </p>
-          <div className="mt-6 flex space-x-4">
+          <div className="mt-10 flex space-x-4">
             {/* Social Media Icons */}
             <a
               href="https://facebook.com"
@@ -72,14 +68,6 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                href="/blogs"
-                className="text-gray-400 hover:text-white transition duration-300"
-              >
-                Blogs
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/about"
                 className="text-gray-400 hover:text-white transition duration-300"
               >
@@ -97,6 +85,29 @@ const Footer = () => {
           </ul>
         </div>
 
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-4">Contact Us</h3>
+          <ul className="space-y-4 text-gray-400">
+            <li>
+              <strong>Phone:</strong>{" "}
+              <a href="tel:0163456099" className="hover:text-white">
+                01634 56099
+              </a>
+            </li>
+            <li>
+              <strong>Email:</strong>{" "}
+              <a href="mailto:office@mishor.co.uk" className="hover:text-white">
+                office@mishor.co.uk
+              </a>
+            </li>
+            <li>
+              <strong>Address:</strong>
+              <p className="mt-1">
+                Mishor Compliance Services, 7 Bell Yard, WC2A 2JR London, UK
+              </p>
+            </li>
+          </ul>
+        </div>
         {/* Subscribe to Newsletter */}
         <div>
           <h3 className="text-xl font-semibold text-white mb-4">Subscribe</h3>
@@ -109,7 +120,7 @@ const Footer = () => {
               className="bg-gray-800 text-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary w-full"
               placeholder="Enter your email"
             />
-            <button className="bg-primary text-white px-4 py-2 ml-2 hover:bg-primary-hover transition duration-300">
+            <button className="bg-primary text-white p-2 ml-2 hover:bg-primary-hover transition duration-300">
               Subscribe
             </button>
           </form>
@@ -118,7 +129,9 @@ const Footer = () => {
 
       <div className="mt-12 border-t border-gray-800 pt-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-6 md:px-12 lg:px-24">
-          <p className="text-gray-500">© 2024 GYMGear. All rights reserved.</p>
+          <p className="text-gray-500">
+            © 2024 All Rights Reserved | Mishor Compliance Services
+          </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
               href="/privacy-policy"

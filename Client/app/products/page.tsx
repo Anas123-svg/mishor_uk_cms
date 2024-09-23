@@ -40,12 +40,8 @@ const page = () => {
   const [filters, setFilters] = useState({
     minPrice: 0,
     maxPrice: 0,
-    sizes: [] as string[],
-    colors: [] as string[],
   });
   const [filterValues, setFilterValues] = useState({
-    sizes: [] as string[],
-    colors: [] as string[],
     maxPrice: 0,
   });
 
@@ -62,14 +58,12 @@ const page = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/filter?min=${
+        `${process.env.NEXT_PUBLIC_API_URL}/products?min=${
           filters.minPrice
-        }&max=${filters.maxPrice}&size=${filters.sizes.join(
-          ","
-        )}&color=${filters.colors.join(",")}&page=${filter ? 1 : page}`
+        }&max=${filters.maxPrice}&page=${filter ? 1 : page}`
       );
-      setProducts(response.data.products);
-      setTotalPages(response.data.totalPages);
+      setProducts(response.data);
+      // setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log(error);
     } finally {
@@ -83,15 +77,11 @@ const page = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/product/filterValues`
       );
       setFilterValues({
-        sizes: response.data.sizes,
-        colors: response.data.colors,
         maxPrice: response.data.maxPrice,
       });
       setFilters({
         minPrice: 0,
         maxPrice: response.data.maxPrice,
-        sizes: [],
-        colors: [],
       });
     } catch (error) {
       console.log(error);
@@ -103,10 +93,10 @@ const page = () => {
       <div className="text-center mb-12 flex flex-col items-center">
         <h1 className="text-4xl font-mons tracking-wide">Our Catalogue</h1>
         <p className="mt-4 text-gray-600 max-w-xl">
-          Find top-quality fitness gear designed to elevate your workouts.
-          Explore our range of equipment, apparel, and accessories built for
-          performance and durability. Get the tools you need to power your
-          fitness journey!
+          Discover premium health and safety equipment designed to protect your
+          business. Explore our range of compliance tools, safety gear, and
+          solutions built for reliability and effectiveness. Equip your
+          workplace with the essentials to ensure safety and compliance!
         </p>
       </div>
       <div className="w-full my-10">
@@ -196,65 +186,12 @@ const page = () => {
                     className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
                   />
                 </div>
-                <h2 className="font-mons font-light pt-5">Sizes: </h2>
-                <div className="flex flex-wrap gap-2">
-                  {filterValues.sizes
-                    .sort((a, b) => {
-                      const order = ["S", "M", "L", "XL"];
-                      return order.indexOf(a) - order.indexOf(b);
-                    })
-                    .map((size) => (
-                      <button
-                        key={size}
-                        onClick={() =>
-                          setFilters({
-                            ...filters,
-                            sizes: filters.sizes.includes(size)
-                              ? filters.sizes.filter((s) => s !== size)
-                              : [...filters.sizes, size],
-                          })
-                        }
-                        className={`font-mons font-light py-1 px-3  hover:border-black border rounded-none ${
-                          filters.sizes.includes(size)
-                            ? "border-black"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                </div>
-                <h2 className="font-mons font-light pt-5">Colors: </h2>
-                <div className="flex flex-wrap gap-2">
-                  {filterValues.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() =>
-                        setFilters({
-                          ...filters,
-                          colors: filters.colors.includes(color)
-                            ? filters.colors.filter((c) => c !== color)
-                            : [...filters.colors, color],
-                        })
-                      }
-                      className={`font-mons font-light py-1 px-3 hover:border-black border rounded-none ${
-                        filters.colors.includes(color)
-                          ? "border-black"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      {color}
-                    </button>
-                  ))}
-                </div>
                 <div className="flex flex-col gap-2 mt-auto">
                   <button
                     onClick={() => {
                       setFilters({
                         minPrice: 0,
                         maxPrice: filterValues.maxPrice,
-                        sizes: [],
-                        colors: [],
                       });
                     }}
                     className="font-mons flex justify-center py-2 bg-gray-300 hover:bg-gray-400 text-black transition duration-200"
@@ -278,29 +215,41 @@ const page = () => {
         <Grid
           products={
             sort === "name"
-              ? products.slice().sort((a, b) => a.name.localeCompare(b.name))
+              ? products.slice().sort((a, b) => a.title.localeCompare(b.title))
               : sort === "price-low-to-high"
-              ? products.slice().sort((a, b) => a.finalPrice - b.finalPrice)
+              ? products
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      (a.discountedPrice ? a.discountedPrice : a.price) -
+                      (b.discountedPrice ? b.discountedPrice : b.price)
+                  )
               : sort === "price-high-to-low"
-              ? products.slice().sort((a, b) => b.finalPrice - a.finalPrice)
+              ? products
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      (b.discountedPrice ? b.discountedPrice : b.price) -
+                      (a.discountedPrice ? a.discountedPrice : a.price)
+                  )
               : sort === "newest"
               ? products
                   .slice()
                   .sort(
                     (a, b) =>
-                      new Date(b.createdAt).getTime() -
-                      new Date(a.createdAt).getTime()
+                      new Date(b.created_at).getTime() -
+                      new Date(a.created_at).getTime()
                   )
               : sort === "oldest"
               ? products
                   .slice()
                   .sort(
                     (a, b) =>
-                      new Date(a.createdAt).getTime() -
-                      new Date(b.createdAt).getTime()
+                      new Date(a.created_at).getTime() -
+                      new Date(b.created_at).getTime()
                   )
               : sort === "discount"
-              ? products.filter((product) => product.discount > 0)
+              ? products.filter((product) => product.discountedPrice > 0)
               : products
           }
           loading={loading}

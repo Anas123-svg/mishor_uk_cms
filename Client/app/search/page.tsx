@@ -26,10 +26,10 @@ const page = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product?page=${page}`
+        `${process.env.NEXT_PUBLIC_API_URL}/products`
       );
-      setProducts(response.data.products);
-      setTotalPages(response.data.totalPages);
+      setProducts(response.data);
+      // setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log(error);
     } finally {
@@ -46,21 +46,21 @@ const page = () => {
       <div className="text-center mb-12 flex flex-col items-center">
         <h1 className="text-4xl font-mons tracking-wide">Search</h1>
         <p className="mt-4 text-gray-600 max-w-xl">
-          Search for Gym Clothing & Accessories Find the perfect gym gear with
-          ease. From performance-driven workout clothing to essential
-          accessories like water bottles and gym bags, search for everything you
-          need to elevate your fitness game!
+          Easily find the right safety tools for your business. From tailored
+          compliance services to essential health and safety equipment like fire
+          extinguishers and alarms, discover everything you need to ensure a
+          safer, more compliant workplace!
         </p>
       </div>
       <div className="flex gap-5 w-full  items-center">
-        <h2 className="font-semibold shrink-0 border p-2 text-xs sm:text-sm">
+        <h2 className="font-mons shrink-0 border p-2 text-sm sm:text-base">
           {products.length} {products.length > 1 ? "Products" : "Product"}
         </h2>
         <Search
           placeholders={[
-            "Search by product name or category",
-            "Find items by color, size, or style",
-            "Look for gym gear by description or features",
+            "Search by product name or service",
+            "Find equipment by type, use, or category",
+            "Look for safety solutions by description or features",
           ]}
           onChange={(e) => setSearch(e.target.value)}
           onSubmit={() => router.push(`/search/${search}`)}

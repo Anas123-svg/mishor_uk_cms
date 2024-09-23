@@ -51,10 +51,11 @@ const AboutUs = () => {
                   Our Mission
                 </h2>
                 <p className="text-md text-gray-600 leading-relaxed">
-                  Our mission is to provide high-quality, affordable gym wear
-                  that empowers you to perform at your best. Whether you’re
-                  lifting, running, or stretching, we are here to help you
-                  achieve greatness.
+                  Our mission is to provide high-quality, affordable health and
+                  safety solutions that empower your business to operate at its
+                  best. Whether you're ensuring fire safety, meeting compliance
+                  standards, or protecting your workforce, we are here to help
+                  you maintain a safe and compliant environment.
                 </p>
               </div>
             </div>
@@ -67,42 +68,43 @@ const AboutUs = () => {
               Our Story
             </h2>
             <p className="text-md text-gray-600 leading-relaxed max-w-4xl mx-auto">
-              Founded by a group of fitness enthusiasts, GYMGear was born out of
-              frustration with overpriced gym apparel that didn’t live up to
-              expectations. We knew there had to be a better way to create
-              high-quality, performance-driven gym wear that wouldn’t break the
-              bank. Our journey started with a simple vision: to offer top-tier
-              gym apparel that blends style, durability, and comfort at an
-              affordable price.
+              Founded by a team of safety professionals, Mishor was born out of
+              the need for accessible, high-quality safety solutions that go
+              beyond expectations. We recognized the gap in the market for
+              reliable, compliance-driven safety equipment that businesses can
+              trust without overspending. Our journey began with a clear
+              mission: to provide top-tier health and safety tools that combine
+              effectiveness, durability, and affordability for businesses of all
+              sizes.
             </p>
           </div>
         </section>
         <section className="py-16 bg-gray-50">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl font-mons tracking-wider mb-6">
-              GYMGear by the Numbers
+              Mishor by the Numbers
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <div className="bg-gray-100 p-6">
                 <h3 className="text-2xl font-mons text-gray-800 mb-4">
-                  5+ Years
+                  25+ Years
                 </h3>
                 <p className="text-md text-gray-600">
-                  Experience in the fitness industry
+                  Experience in Health and Safety compliance services
                 </p>
               </div>
               <div className="bg-gray-100 p-6">
                 <h3 className="text-2xl font-mons text-gray-800 mb-4">
-                  10,000+
+                  1,000+
                 </h3>
                 <p className="text-md text-gray-600">
-                  Happy customers around the globe
+                  Satisfied clients across various industries
                 </p>
               </div>
               <div className="bg-gray-100 p-6">
                 <h3 className="text-2xl font-mons text-gray-800 mb-4">50+</h3>
                 <p className="text-md text-gray-600">
-                  Countries we’ve shipped to
+                  Businesses we’ve helped achieve compliance across the UK
                 </p>
               </div>
             </div>
