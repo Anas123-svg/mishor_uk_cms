@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Review;
@@ -30,32 +31,30 @@ class ReviewController extends Controller
             'review' => 'required|string',
             'rating' => 'required|integer|min:1|max:5',
         ]);
-    
+
         $userId = auth()->id();
-    
         $validated['user_id'] = $userId;
-    
+
         $review = Review::create($validated);
-        $review = $review->fresh(['product', 'user']);
-    
+        $review->load(['product', 'user']); // Load relationships
+
         return response()->json($this->transformReview($review), 201);
     }
-    
+
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'reviewer_name' => 'required|string|max:255',
-            'review' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'sometimes|string|max:255',
+            'reviewer_name' => 'sometimes|string|max:255',
+            'review' => 'sometimes|string',
+            'rating' => 'sometimes|integer|min:1|max:5',
         ]);
 
-        $review->update($validated);
+        $review->update(array_filter($validated)); // Only update the fields present in the request
 
-        $review = $review->fresh(['product', 'user']);
+        $review->load(['product', 'user']); // Load relationships
 
         return response()->json($this->transformReview($review));
     }
@@ -84,4 +83,3 @@ class ReviewController extends Controller
         ];
     }
 }
-

@@ -230,6 +230,4 @@ class AdminController extends Controller
     
         return response()->json(['message' => 'Admin not found or unauthorized'], 401);
     }
-    
-
 }

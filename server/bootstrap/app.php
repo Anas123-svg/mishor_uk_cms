@@ -17,9 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'custom.auth' => \App\Http\Middleware\CustomAuth::class,
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
-
         ]);
 
         //
