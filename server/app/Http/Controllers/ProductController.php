@@ -106,9 +106,9 @@ class ProductController extends Controller
             'title' => $product->title,
             'description' => $product->description,
             'price' => $product->price,
-            'discounted_price' => $product->discounted_price,
-            'in_stock' => $product->in_stock,
-            'in_stock_quantity' => $product->in_stock_quantity,
+            'discountedPrice' => $product->discounted_price,
+            'inStock' => $product->in_stock,
+            'inStockQuantity' => $product->in_stock_quantity,
             'category' => optional($product->category)->name,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
@@ -116,14 +116,14 @@ class ProductController extends Controller
             'reviews' => $product->reviews->map(function ($review) {
                 return [
                     'id' => $review->id,
-                    'product_id' => $review->product_id,
+                    'productId' => $review->product_id,
                     'title'=> $review->title,
-                    'reviewer_name' => $review->reviewer_name,
+                    'reviewerName' => $review->reviewer_name,
                     'review' => $review->review,
                     'rating' => $review->rating,
-                    'created_at' => $review->created_at,
-                    'updated_at' => $review->updated_at,
-                    'user_email' => $review->user->email,
+                    'createdAt' => $review->created_at,
+                    'updatedAt' => $review->updated_at,
+                    'userEmail' => $review->user->email,
                 ];
             }),
         ];
@@ -142,3 +142,4 @@ class ProductController extends Controller
         return response()->json(['count' => $productCount]);
     }
 }
+
