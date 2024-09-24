@@ -160,5 +160,29 @@ class ProductController extends Controller
         $productCount = Product::count();
         return response()->json(['count' => $productCount]);
     }
+
+
+    public function search(Request $request)
+{
+    $searchTerm = $request->input('query');
+
+    $products = Product::where('title', 'LIKE', '%' . $searchTerm . '%')
+        ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
+        ->with('images', 'reviews.user', 'category')
+        ->paginate(12); 
+
+    $transformedProducts = $products->getCollection()->map(function ($product) {
+        return $this->transformProduct($product);
+    });
+
+    return response()->json([
+        'products' => $transformedProducts,
+        'currentPage' => $products->currentPage(),
+        'lastPage' => $products->lastPage(),
+        'perPage' => $products->perPage(),
+        'total' => $products->total(),
+    ]);
+}
+
 }
 

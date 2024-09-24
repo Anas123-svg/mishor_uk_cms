@@ -53,6 +53,7 @@ Route::post('login', [UserController::class, 'login']);
 
 
 Route::get('/products/count', action: [ProductController::class, 'getProductCount']);
+Route::get('products/search', [ProductController::class, 'search']);
 
 Route::get('/products', [ProductController::class, 'index']);       // List all products here gi
 Route::post('products', [ProductController::class, 'store']);      // Create a new product
