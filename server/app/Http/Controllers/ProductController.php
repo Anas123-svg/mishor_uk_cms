@@ -8,15 +8,25 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('images', 'reviews.user', 'category')->get()->map(function ($product) {
+        $products = Product::with('images', 'reviews.user', 'category')
+            ->paginate(12);
+    
+   
+        $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
         });
-
-        return response()->json($products);
+    
+        return response()->json([
+            'products' => $transformedProducts,
+            'currentPage' => $products->currentPage(),
+            'lastPage' => $products->lastPage(),
+            'perPage' => $products->perPage(),
+            'total' => $products->total(),
+        ]);
     }
-
+    
     public function show($id)
     {
         $product = Product::with('images', 'reviews.user', 'category')->findOrFail($id);
@@ -91,14 +101,23 @@ class ProductController extends Controller
 
     public function getProductsByCategory($categoryId)
     {
-        $category = Category::with('products.images', 'products.reviews.user')->findOrFail($categoryId);
-        $products = $category->products->map(function ($product) {
+        $category = Category::findOrFail($categoryId);
+        $products = $category->products()->with('images', 'reviews.user')
+            ->paginate(12);
+    
+        $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
         });
-
-        return response()->json($products);
+    
+        return response()->json([
+            'products' => $transformedProducts,
+            'currentPage' => $products->currentPage(),
+            'lastPage' => $products->lastPage(),
+            'perPage' => $products->perPage(),
+            'total' => $products->total(),
+        ]);
     }
-
+    
     private function transformProduct($product)
     {
         return [
@@ -106,9 +125,9 @@ class ProductController extends Controller
             'title' => $product->title,
             'description' => $product->description,
             'price' => $product->price,
-            'discounted_price' => $product->discounted_price,
-            'in_stock' => $product->in_stock,
-            'in_stock_quantity' => $product->in_stock_quantity,
+            'discountedPrice' => $product->discounted_price,
+            'inStock' => $product->in_stock,
+            'inStockQuantity' => $product->in_stock_quantity,
             'category' => optional($product->category)->name,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
@@ -116,14 +135,14 @@ class ProductController extends Controller
             'reviews' => $product->reviews->map(function ($review) {
                 return [
                     'id' => $review->id,
-                    'product_id' => $review->product_id,
+                    'productId' => $review->product_id,
                     'title'=> $review->title,
-                    'reviewer_name' => $review->reviewer_name,
+                    'reviewerName' => $review->reviewer_name,
                     'review' => $review->review,
                     'rating' => $review->rating,
-                    'created_at' => $review->created_at,
-                    'updated_at' => $review->updated_at,
-                    'user_email' => $review->user->email,
+                    'createdAt' => $review->created_at,
+                    'updatedAt' => $review->updated_at,
+                    'userEmail' => $review->user->email,
                 ];
             }),
         ];
@@ -142,3 +161,4 @@ class ProductController extends Controller
         return response()->json(['count' => $productCount]);
     }
 }
+

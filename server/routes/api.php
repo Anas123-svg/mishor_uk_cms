@@ -7,25 +7,52 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReviewController;
+
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
 
 
 
 
 
+Route::middleware('custom.auth')->group(function () {
+    Route::put('user/update', [UserController::class, 'update']);
+    Route::post('logout', [UserController::class, 'logout']);
+    Route::get('user', [UserController::class, 'show']);
+    Route::delete('user/delete', [UserController::class, 'destroy']);
+    Route::get('users', [UserController::class, 'index']);
+    Route::put('/user/{id}', [UserController::class, 'updateById']);
+    Route::get('user/{id}', [UserController::class, 'showById']);
+    //reviews
+    Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::get('/reviews/{id}', [ReviewController::class, 'show']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+    //cart
+    Route::get('/carts', [CartController::class, 'index']); 
+    Route::get('/carts/{id}', [CartController::class, 'show']); 
+    Route::post('/carts', [CartController::class, 'store']); 
+    Route::put('/carts/{id}', [CartController::class, 'update']);
+    Route::delete('/carts/{id}', [CartController::class, 'destroy']);
+    //Wishlists 
+    Route::get('/wishlists', [WishlistController::class, 'index']);
+    Route::get('/wishlists/{id}', [WishlistController::class, 'show']);
+    Route::post('/wishlists', [WishlistController::class, 'store']);
+    Route::put('/wishlists/{id}', [WishlistController::class, 'update']);
+    Route::delete('/wishlists/{id}', [WishlistController::class, 'destroy']);
+});
 
 
-
-
-Route::post('register', [UserController::class, 'register']);
+Route::post('register', [UserController::class, 'store']);
 Route::post('login', [UserController::class, 'login']);
-Route::middleware('auth:sanctum')->post('logout', [UserController::class, 'logout']);
-Route::middleware('auth:sanctum')->get('user', [UserController::class, 'showByToken']);
-Route::middleware('auth:sanctum')->put('user/update', [UserController::class, 'updateByToken']);
-Route::middleware('auth:sanctum')->get('users', [UserController::class, 'index']);
-Route::middleware('auth:sanctum')->put('user/{id}', [UserController::class, 'updateById']);
-Route::middleware('auth:sanctum')->delete('user/{id}', [UserController::class, 'destroy']);
 
-Route::get('/products/count', [ProductController::class, 'getProductCount']);
+///Route::put('user/update', [UserController::class, 'update']);
+
+
+
+Route::get('/products/count', action: [ProductController::class, 'getProductCount']);
 
 Route::get('/products', [ProductController::class, 'index']);       // List all products here gi
 Route::post('products', [ProductController::class, 'store']);      // Create a new product

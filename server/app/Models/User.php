@@ -6,33 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens; 
-
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    use HasApiTokens, HasFactory, Notifiable;
+    use  HasFactory;
 
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'address',
-        'postal_code',
-        'city',
-        'country',
-        'mobile_phone_number',
-        'email',
-        'bank_details',
-        'is_verified',
-        'confirmation_of_knowledge',
+        'name', 
+        'email', 
+        'phone', 
+        'address', 
         'password',
     ];
 
@@ -45,5 +32,30 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    // Define the relationship with Cart
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function show()
+    {
+        $user = Auth::user()->load(['wishlists.product', 'carts.product']);
+        return response()->json($user);
+    }
+    
+    public function showById($id)
+    {
+        $user = User::with(['wishlists.product', 'carts.product'])->findOrFail($id);
+        return response()->json($user);
+    }
+    
 }
 

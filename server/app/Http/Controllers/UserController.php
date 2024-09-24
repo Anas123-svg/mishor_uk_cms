@@ -3,197 +3,134 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Wishlist; 
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller as BaseController;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
-    /**
-     * Display a listing of all users.
-     */
-    public function index()
+    public function store(Request $request)
     {
-        $users = User::all();
-        return response()->json($users, 200);
-    }
-
-    /**
-     * Register a new user and return an access token.
-     */
-    public function register(Request $request)
-
-    {
-        \Log::info('Register method called');
-
-        // Validate request
         $validatedData = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string|max:255',
             'password' => 'required|string|min:8',
-            'address' => 'nullable|string',
-            'postal_code' => 'nullable|string',
-            'city' => 'nullable|string',
-            'country' => 'nullable|string',
-            'mobile_phone_number' => 'nullable|string',
-            'bank_details' => 'nullable|string',
         ]);
-    
-        // Create user
+
         $user = User::create([
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
+            'name' => $validatedData['name'],
             'email' => $validatedData['email'],
+            'phone' => $validatedData['phone'],
+            'address' => $validatedData['address'],
             'password' => Hash::make($validatedData['password']),
-            'address' => $validatedData['address'] ?? null,
-            'postal_code' => $validatedData['postal_code'] ?? null,
-            'city' => $validatedData['city'] ?? null,
-            'country' => $validatedData['country'] ?? null,
-            'mobile_phone_number' => $validatedData['mobile_phone_number'] ?? null,
-            'bank_details' => $validatedData['bank_details'] ?? null,
         ]);
-    
-        // Generate token
+
         $token = $user->createToken('authToken')->plainTextToken;
-    
-        // Return user details along with the token
+
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'address' => $user->address,
-                'postal_code' => $user->postal_code,
-                'city' => $user->city,
-                'country' => $user->country,
-                'mobile_phone_number' => $user->mobile_phone_number,
-                'bank_details' => $user->bank_details,
-            ],
-            'token' => $token
+            'user' => $user->load(['wishlists.product', 'carts.product']), 
+            'token' => $token,
         ], 201);
     }
-    
-    /**
-     * Login user and return an access token.
-     */
-    public function login(Request $request)
+
+    public function show()
     {
-        $validatedData = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
+        $user = Auth::user()->load(['wishlists.product', 'carts.product']);
+        return response()->json($user);
+    }
+
+    public function showById($id)
+    {
+        $user = User::with(['wishlists.product', 'carts.product'])->findOrFail($id);
+        return response()->json($user);
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+    
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'sometimes|string',
+            'address' => 'sometimes|string',
+            'password' => 'sometimes|string|min:8|nullable',
         ]);
     
-        // Attempt login
-        if (!Auth::attempt($validatedData)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        $user->update($request->only(['name', 'email', 'phone', 'address']));
+    
+        if ($request->filled('password')) {
+            $user->update(['password' => Hash::make($request->password)]);
         }
     
-        // Get authenticated user
-        $user = Auth::user();
-        $token = $user->createToken('authToken')->plainTextToken;
-    
-        // Return user details along with the token
-        return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'address' => $user->address,
-                'postal_code' => $user->postal_code,
-                'city' => $user->city,
-                'country' => $user->country,
-                'mobile_phone_number' => $user->mobile_phone_number,
-                'bank_details' => $user->bank_details,
-                // Add more user details as needed
-            ],
-            'token' => $token
-        ], 200);
+        return response()->json($user->load(['wishlists.product', 'carts.product']), 200); // Load products
     }
     
-    /**
-     * Logout user (destroy token).
-     */
-    public function logout(Request $request)
-    {
-        // Revoke the current user's token
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully'], 200);
-    }
-
-    /**
-     * Display the specified user by token (authenticated user).
-     */
-    public function showByToken()
-    {
-        $user = Auth::user();
-        return response()->json($user, 200);
-    }
-
-    /**
-     * Update the specified user by ID.
-     */
     public function updateById(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
-        // Validate request
-        $validatedData = $request->validate([
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
-            'address' => 'nullable|string',
-            'postal_code' => 'nullable|string',
-            'city' => 'nullable|string',
-            'country' => 'nullable|string',
-            'mobile_phone_number' => 'nullable|string',
-            'bank_details' => 'nullable|string',
+    
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'sometimes|string',
+            'address' => 'sometimes|string',
+            'password' => 'sometimes|string|min:8|nullable',
         ]);
-
-        // Update user
-        $user->update($validatedData);
-
-        return response()->json($user, 200);
+    
+        $user->update($request->only(['name', 'email', 'phone', 'address']));
+    
+        if ($request->filled('password')) {
+            $user->update(['password' => Hash::make($request->password)]);
+        }
+    
+        return response()->json(['message' => 'User updated successfully', 'user' => $user->load(['wishlists.product', 'carts.product'])], 200); // Load products
     }
-
-    /**
-     * Update the specified user by token (authenticated user).
-     */
-    public function updateByToken(Request $request)
+    
+    public function destroy()
     {
         $user = Auth::user();
-
-        // Validate request
-        $validatedData = $request->validate([
-            'first_name' => 'string|max:255',
-            'last_name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-            'address' => 'nullable|string',
-            'postal_code' => 'nullable|string',
-            'city' => 'nullable|string',
-            'country' => 'nullable|string',
-            'mobile_phone_number' => 'nullable|string',
-            'bank_details' => 'nullable|string',
-        ]);
-
-        $user->update($validatedData);
-
-        return response()->json($user, 200);
-    }
-
-    /**
-     * Remove the specified user by ID.
-     */
-    public function destroy($id)
-    {
-        $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully'], 200);
+        return response()->json(['message' => 'User deleted'], 200);
+    }
+
+    public function logout()
+    {
+        Auth::user()->tokens()->delete();
+
+        return response()->json(['message' => 'Logged out'], 200);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            $token = $user->createToken('authToken')->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user' => $user->load(['wishlists.product', 'carts.product']), 
+            ], 200);
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function index()
+    {
+        $users = User::with(['wishlists.product', 'carts.product'])->get();
+        return response()->json($users);
     }
 }
