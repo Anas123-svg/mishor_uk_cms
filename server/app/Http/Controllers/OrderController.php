@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    // CREATE a new order
     public function store(Request $request)
     {
-        // Validate the incoming request data
         $validated = $request->validate([
             'user_id' => 'nullable|exists:users,id',
             'name' => 'required|string|max:255',
@@ -34,10 +32,8 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        // Create the order
         $order = Order::create($validated);
 
-        // Save order items
         foreach ($validated['items'] as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
@@ -46,12 +42,10 @@ class OrderController extends Controller
             ]);
         }
 
-        // Fetch the order items with product details
         $orderItems = OrderItem::where('order_id', $order->id)
             ->with('product')
             ->get();
 
-        // Include the items in the response
         return response()->json([
             'order_id' => $order->id,
             'order' => $order,
@@ -64,14 +58,12 @@ class OrderController extends Controller
         ], 201);
     }
 
-    // READ all orders
     public function index()
     {
         $orders = Order::with('orderItems.product')->get();
         return response()->json($orders);
     }
 
-    // READ a single order by ID
     public function show($id)
     {
         $order = Order::findOrFail($id);
@@ -87,13 +79,10 @@ class OrderController extends Controller
         ]);
     }
 
-    // UPDATE an existing order
     public function update(Request $request, $id)
     {
-        // Find the existing order
         $order = Order::findOrFail($id);
     
-        // Validate the incoming request data
         $validated = $request->validate([
             'user_id' => 'nullable|exists:users,id',
             'name' => 'required|string|max:255',
@@ -112,15 +101,11 @@ class OrderController extends Controller
             'items.*.quantity' => 'required_with:items|integer|min:1',
         ]);
     
-        // Update the order details
         $order->update($validated);
     
-        // Check if there are any items to update
         if (isset($validated['items'])) {
-            // Delete existing items for the order
             OrderItem::where('order_id', $order->id)->delete();
     
-            // Create new order items based on the validated request
             foreach ($validated['items'] as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -130,12 +115,10 @@ class OrderController extends Controller
             }
         }
     
-        // Fetch the updated order items with product details
         $orderItems = OrderItem::where('order_id', $order->id)
             ->with('product')
             ->get();
     
-        // Return the response with updated order and items
         return response()->json([
             'order' => $order,
             'items' => $orderItems->map(function ($item) {
@@ -147,7 +130,6 @@ class OrderController extends Controller
         ]);
     }
     
-    // DELETE an order
     public function destroy($id)
     {
         $order = Order::findOrFail($id);
@@ -156,22 +138,18 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order deleted successfully']);
     }
 
-    // GET all orders for a user by token
     public function getUserOrders(Request $request, $userId)
     {
-        // Check if the user exists
         $user = User::find($userId);
     
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
     
-        // Fetch all orders for the specified user
         $orders = Order::where('user_id', $userId)->with('orderItems.product')->get();
     
-        // Return structured JSON response
         return response()->json([
-            'user_id' => $userId, // Include user ID in the response
+            'user_id' => $userId, 
             'orders' => $orders->map(function ($order) {
                 return [
                     'order_id' => $order->id,
@@ -181,7 +159,7 @@ class OrderController extends Controller
                         return [
                             'product_id' => $item->product_id,
                             'quantity' => $item->quantity,
-                            'product' => $item->product, // Assuming product relationship is defined
+                            'product' => $item->product, 
                         ];
                     }),
                 ];
