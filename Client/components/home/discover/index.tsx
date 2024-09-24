@@ -15,10 +15,10 @@ const Discover = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products`
+        `${process.env.NEXT_PUBLIC_API_URL}/products
+?page=1`
       );
-      console.log(response.data);
-      setProducts(response.data);
+      setProducts(response.data.products);
     } catch (error) {
       console.log(error);
     } finally {
