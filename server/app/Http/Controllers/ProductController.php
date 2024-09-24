@@ -99,15 +99,47 @@ class ProductController extends Controller
         return response()->json(null, 204);
     }
 
-    public function getProductsByCategory($categoryId)
+    public function getProductsByCategory(Request $request) 
     {
-        $category = Category::findOrFail($categoryId);
-        $products = $category->products()->with('images', 'reviews.user')
-            ->paginate(12);
+        \Log::info('Received request for products by category', ['query' => $request->query()]);
+    
+        $categoryName = $request->query('category_name');
+        
+        if (!$categoryName) {
+            \Log::warning('Category name not provided in the request');
+            return response()->json(['message' => 'Category name is required'], 400);
+        }
+    
+        $normalizedCategoryName = trim($categoryName);
+        $normalizedCategoryName = str_replace(['+', '%20'], ' ', $normalizedCategoryName); // Replace '+' and '%20' with space
+        \Log::info('Normalized category name', ['normalizedCategoryName' => $normalizedCategoryName]);
+    
+        $category = Category::where('name', 'like', '%' . $normalizedCategoryName . '%')->first();
+    
+        if ($category) {
+            \Log::info('Category found', ['id' => $category->id, 'name' => $category->name]);
+        } else {
+            \Log::warning('Category not found', ['searchedName' => $normalizedCategoryName]);
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+    
+        $products = Product::where('category_id', $category->id)
+                            ->with('images', 'reviews.user')
+                            ->paginate(12);
+        
+        \Log::info('Number of products found for category', ['count' => $products->total()]);
+    
+        if ($products->isEmpty()) {
+            \Log::info('No products found for the category', ['categoryId' => $category->id]);
+        } else {
+            \Log::info('Products retrieved successfully', ['productsCount' => $products->count()]);
+        }
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
-            return $this->transformProduct($product);
+            return $this->transformProduct($product); 
         });
+    
+        \Log::info('Transformed products', ['transformedProducts' => $transformedProducts]);
     
         return response()->json([
             'products' => $transformedProducts,
@@ -117,7 +149,7 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
-    
+                        
     private function transformProduct($product)
     {
         return [

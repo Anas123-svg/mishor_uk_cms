@@ -1,210 +1,193 @@
-<?php
+<?php 
+
 namespace App\Http\Controllers;
 
-use App\Models\Orders;
-use App\Models\OrderItem;
-use App\Models\Product; 
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\OrderItem;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    // CREATE a new order
+    public function store(Request $request)
+    {
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:100',
+            'postalCode' => 'required|string|max:20',
+            'country' => 'required|string|max:100',
+            'status' => 'required|in:pending,processing,completed,cancelled',
+            'paymentMethod' => 'required|string|max:100',
+            'subTotal' => 'required|numeric|min:0',
+            'delivery' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+
+        // Create the order
+        $order = Order::create($validated);
+
+        // Save order items
+        foreach ($validated['items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity']
+            ]);
+        }
+
+        // Fetch the order items with product details
+        $orderItems = OrderItem::where('order_id', $order->id)
+            ->with('product')
+            ->get();
+
+        // Include the items in the response
+        return response()->json([
+            'order_id' => $order->id,
+            'order' => $order,
+            'items' => $orderItems->map(function ($item) {
+                return [
+                    'quantity' => $item->quantity,
+                    'product' => $item->product,
+                ];
+            }),
+        ], 201);
+    }
+
+    // READ all orders
     public function index()
     {
-        $orders = Orders::with('user', 'items.product')->get();
-        $orders = $orders->map(function ($order) {
-            return [
-                'id' => $order->id,
-                'order_number' => $order->order_number,
-                'total_amount' => $order->total_amount,
-                'status' => $order->status,
-                'payment_method' => $order->payment_method,
-                'shipping_address_line1' => $order->shipping_address_line1,
-                'shipping_address_line2' => $order->shipping_address_line2,
-                'shipping_city' => $order->shipping_city,
-                'shipping_state' => $order->shipping_state,
-                'shipping_postal_code' => $order->shipping_postal_code,
-                'shipping_country' => $order->shipping_country,
-                'created_at' => $order->created_at->format('Y-m-d H:i:s'),
-                'name' => $order->user->first_name . ' ' . $order->user->last_name,
-                'email' => $order->user->email,
-                'phone' => $order->user->mobile_phone_number,
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'product' => $item->product, 
-                        'quantity' => $item->quantity,
-//                        'size' => $item->size,
-                    ];
-                }),
-            ];
-        });
+        $orders = Order::with('orderItems.product')->get();
         return response()->json($orders);
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'total_amount' => 'required|numeric',
-            'payment_method' => 'required|string',
-            'shipping_address_line1' => 'required|string',
-            'shipping_address_line2' => 'nullable|string',
-            'shipping_city' => 'required|string',
-            'shipping_state' => 'required|string',
-            'shipping_postal_code' => 'required|string',
-            'shipping_country' => 'required|string',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer',
-            'items.*.size' => 'nullable|string',
-        ]);
-
-        $user = Auth::user();
-        $orderNumber = 'ORD' . strtoupper(uniqid());
-
-        $orderData = array_merge($request->all(), [
-            'user_id' => $user->id,
-            'order_number' => $orderNumber,
-            'status' => 'pending',
-        ]);
-
-        $order = Orders::create($orderData);
-
-        foreach ($request->input('items') as $itemData) {
-            $itemData['order_id'] = $order->id;
-            OrderItem::create($itemData);
-        }
-
-        $response = [
-            'id' => $order->id,
-            'order_number' => $order->order_number,
-            'total_amount' => $order->total_amount,
-            'status' => $order->status,
-            'payment_method' => $order->payment_method,
-            'shipping_address_line1' => $order->shipping_address_line1,
-            'shipping_address_line2' => $order->shipping_address_line2,
-            'shipping_city' => $order->shipping_city,
-            'shipping_state' => $order->shipping_state,
-            'shipping_postal_code' => $order->shipping_postal_code,
-            'shipping_country' => $order->shipping_country,
-            'created_at' => $order->created_at->format('Y-m-d H:i:s'),
-            'name' => $user->first_name . ' ' . $user->last_name,
-            'email' => $user->email,
-            'phone' => $user->mobile_phone_number,
-            'items' => $order->items->map(function ($item) {
-                return [
-                    'product' => $item->product, 
-                    'quantity' => $item->quantity,
-                  //  'size' => $item->size,
-                ];
-            }),
-        ];
-
-        return response()->json($response, 201);
-    }
-
+    // READ a single order by ID
     public function show($id)
     {
-        $order = Orders::with('user', 'items.product')->find($id);
+        $order = Order::findOrFail($id);
 
-        if (is_null($order)) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        $order = [
-            'id' => $order->id,
-            'order_number' => $order->order_number,
-            'total_amount' => $order->total_amount,
-            'status' => $order->status,
-            'payment_method' => $order->payment_method,
-            'shipping_address_line1' => $order->shipping_address_line1,
-            'shipping_address_line2' => $order->shipping_address_line2,
-            'shipping_city' => $order->shipping_city,
-            'shipping_state' => $order->shipping_state,
-            'shipping_postal_code' => $order->shipping_postal_code,
-            'shipping_country' => $order->shipping_country,
-            'created_at' => $order->created_at->format('Y-m-d H:i:s'),
-            'name' => $order->user->first_name . ' ' . $order->user->last_name,
-            'email' => $order->user->email,
-            'phone' => $order->user->mobile_phone_number,
-            'items' => $order->items->map(function ($item) {
+        return response()->json([
+            'order' => $order,
+            'items' => $order->orderItems()->with('product')->get()->map(function ($item) {
                 return [
-                    'product' => $item->product, 
                     'quantity' => $item->quantity,
-                   // 'size' => $item->size,
+                    'product' => $item->product,
                 ];
             }),
-        ];
-
-        return response()->json($order);
+        ]);
     }
 
+    // UPDATE an existing order
     public function update(Request $request, $id)
     {
-        $order = Orders::find($id);
-
-        if (is_null($order)) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        $request->validate([
-            'total_amount' => 'sometimes|numeric',
-            'payment_method' => 'sometimes|string',
-            'shipping_address_line1' => 'sometimes|string',
-            'shipping_address_line2' => 'sometimes|string',
-            'shipping_city' => 'sometimes|string',
-            'shipping_state' => 'sometimes|string',
-            'shipping_postal_code' => 'sometimes|string',
-            'shipping_country' => 'sometimes|string',
-            'status' => 'sometimes|in:pending,processing,completed,cancelled',
-            'items' => 'sometimes|array',
-            'items.*.product_id' => 'sometimes|exists:products,id',
-            'items.*.quantity' => 'sometimes|integer',
-            'items.*.size' => 'nullable|string',
+        // Find the existing order
+        $order = Order::findOrFail($id);
+    
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:100',
+            'postalCode' => 'required|string|max:20',
+            'country' => 'required|string|max:100',
+            'status' => 'required|in:pending,processing,completed,cancelled',
+            'paymentMethod' => 'required|string|max:100',
+            'subTotal' => 'required|numeric|min:0',
+            'delivery' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'items' => 'nullable|array',
+            'items.*.product_id' => 'required_with:items|exists:products,id',
+            'items.*.quantity' => 'required_with:items|integer|min:1',
         ]);
-
-        $order->update($request->only([
-            'total_amount',
-            'payment_method',
-            'shipping_address_line1',
-            'shipping_address_line2',
-            'shipping_city',
-            'shipping_state',
-            'shipping_postal_code',
-            'shipping_country',
-            'status',
-        ]));
-        $order->items()->delete();
-
-        foreach ($request->input('items', []) as $itemData) {
-            $itemData['order_id'] = $order->id;
-            OrderItem::create($itemData);
+    
+        // Update the order details
+        $order->update($validated);
+    
+        // Check if there are any items to update
+        if (isset($validated['items'])) {
+            // Delete existing items for the order
+            OrderItem::where('order_id', $order->id)->delete();
+    
+            // Create new order items based on the validated request
+            foreach ($validated['items'] as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity']
+                ]);
+            }
         }
     
-        return response()->json($order->load('items.product'));
-        }
-
+        // Fetch the updated order items with product details
+        $orderItems = OrderItem::where('order_id', $order->id)
+            ->with('product')
+            ->get();
+    
+        // Return the response with updated order and items
+        return response()->json([
+            'order' => $order,
+            'items' => $orderItems->map(function ($item) {
+                return [
+                    'quantity' => $item->quantity,
+                    'product' => $item->product,
+                ];
+            }),
+        ]);
+    }
+    
+    // DELETE an order
     public function destroy($id)
     {
-        $order = Orders::find($id);
-
-        if (is_null($order)) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        $order->items()->delete();
+        $order = Order::findOrFail($id);
         $order->delete();
 
         return response()->json(['message' => 'Order deleted successfully']);
     }
 
-    /**
-     * Get the count of all orders in the database.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getOrderCount()
+    // GET all orders for a user by token
+    public function getUserOrders(Request $request, $userId)
     {
-        $orderCount = Orders::count(); 
-        return response()->json(['count' => $orderCount]);
+        // Check if the user exists
+        $user = User::find($userId);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    
+        // Fetch all orders for the specified user
+        $orders = Order::where('user_id', $userId)->with('orderItems.product')->get();
+    
+        // Return structured JSON response
+        return response()->json([
+            'user_id' => $userId, // Include user ID in the response
+            'orders' => $orders->map(function ($order) {
+                return [
+                    'order_id' => $order->id,
+                    'status' => $order->status,
+                    'total' => $order->total,
+                    'items' => $order->orderItems->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'quantity' => $item->quantity,
+                            'product' => $item->product, // Assuming product relationship is defined
+                        ];
+                    }),
+                ];
+            }),
+        ]);
     }
+        
 }
+
