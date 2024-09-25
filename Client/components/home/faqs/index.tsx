@@ -22,12 +22,6 @@ const faqs: FAQ[] = [
       "To place an order, simply browse our product categories, add the desired items to your cart, and proceed to checkout. You can also create an account to track your orders and access special offers.",
   },
   {
-    id: 3,
-    question: "What payment methods do you accept?",
-    answer:
-      "We accept all major credit cards, PayPal, and bank transfers. You can select your preferred payment method at checkout for a secure and seamless transaction.",
-  },
-  {
     id: 4,
     question: "Do you offer delivery across the UK?",
     answer:

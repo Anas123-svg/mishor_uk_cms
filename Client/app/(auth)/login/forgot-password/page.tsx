@@ -114,8 +114,8 @@ const page = () => {
   }
 
   return (
-    <div className="flex items-center justify-center flex-col min-h-screen pt-40 px-8 md:px-16 lg:px-24 xl:px-32">
-      <h1 className="text-3xl font-semibold mb-3">
+    <div className="flex items-center justify-center flex-col min-h-screen px-6 md:px-12 lg:px-24">
+      <h1 className="text-4xl font-mons tracking-wide mb-3">
         Reset your{" "}
         <span className="bg-primary text-white px-2 italic">Password!</span>{" "}
       </h1>{" "}
@@ -146,16 +146,13 @@ const page = () => {
                 disabled={
                   timer !== 0 || form.getValues("email") === "" || isSending
                 }
-                className="flex justify-center border p-2 border-black bg-transparent hover:bg-transparent text-white  dark:border-white relative group transition duration-200"
+                className="font-mons flex justify-center p-2  bg-primary hover:bg-primary-hover text-white  dark:border-white transition duration-200"
               >
-                <div className="absolute bottom-0 right-0 bg-primary h-full w-full group-hover:scale-x-90 group-hover:scale-y-75 transition-all duration-200" />
-                <span className="relative text-sm font-semibold whitespace-nowrap">
-                  {isSending
-                    ? "Sending..."
-                    : isExpired
-                    ? "Send Code"
-                    : "00:" + (timer > 9 ? timer : "0" + timer)}
-                </span>
+                {isSending
+                  ? "Sending..."
+                  : isExpired
+                  ? "Send Code"
+                  : "00:" + (timer > 9 ? timer : "0" + timer)}
               </Button>
             </div>
             <div className="flex justify-center items-center flex-col">
@@ -204,12 +201,9 @@ const page = () => {
             <Button
               disabled={isSubmitting || timer === 0}
               type="submit"
-              className="rounded-none font-bold w-full bg-transparent hover:bg-transparent py-3 border border-black dark:border-white relative group transition duration-200"
+              className="rounded-none font-mons w-full bg-primary hover:bg-primary-hover py-3  dark:border-white transition duration-200"
             >
-              <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-95 group-hover:scale-y-75 transition-all duration-200" />
-              <span className="relative text-white">
-                {isSubmitting ? "Submitting..." : "Change Password"}
-              </span>
+              {isSubmitting ? "Submitting..." : "Change Password"}
             </Button>
           </form>
         </Form>

@@ -6,7 +6,7 @@ import {
   FaLinkedinIn,
 } from "react-icons/fa";
 import Link from "next/link";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logoWhite.webp";
 
 const Footer = () => {
   return (
@@ -15,9 +15,14 @@ const Footer = () => {
         {/* Logo and Brief Description */}
         <div>
           <Link href="/">
-            <img src={logo.src} alt="logo" className="w-32" />
+            <img src={logo.src} alt="logo" className="w-56" />
           </Link>
-          <div className="mt-10 flex space-x-4">
+          <p className="text-xs text-gray-400 my-5">
+            Mishor Compliance Services provides expert Health and Safety
+            consulting, offering strategic surveys for residential and
+            commercial properties in London and the South East.
+          </p>
+          <div className="mt-5 flex space-x-4">
             {/* Social Media Icons */}
             <a
               href="https://facebook.com"

@@ -62,8 +62,8 @@ const page = () => {
           filters.minPrice
         }&max=${filters.maxPrice}&page=${filter ? 1 : page}`
       );
-      setProducts(response.data);
-      // setTotalPages(response.data.totalPages);
+      setProducts(response.data.products);
+      setTotalPages(response.data.lastPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -194,7 +194,7 @@ const page = () => {
                         maxPrice: filterValues.maxPrice,
                       });
                     }}
-                    className="font-mons flex justify-center py-2 bg-gray-300 hover:bg-gray-400 text-black transition duration-200"
+                    className="font-mons flex justify-center py-2 bg-secondary hover:bg-black text-white transition duration-200"
                   >
                     Clear
                   </button>

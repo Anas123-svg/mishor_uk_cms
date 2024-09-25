@@ -99,7 +99,7 @@ const Reviews: React.FC<ReviewsProps> = ({
     >
       <h1
         className=" 
-        text-2xl font-bold text-gray-800 mb-5"
+        text-3xl font-mons tracking-wide text-gray-800 mb-5"
       >
         Reviews
       </h1>
@@ -108,7 +108,7 @@ const Reviews: React.FC<ReviewsProps> = ({
           Please{" "}
           <button
             onClick={() => router.push("/login")}
-            className="text-primary-dark underline"
+            className="text-primary underline"
           >
             login
           </button>{" "}
@@ -133,7 +133,7 @@ const Reviews: React.FC<ReviewsProps> = ({
               </div>
               <span className="ml-2">({reviews.length})</span>
             </div>
-            <button className="text-sm py-1.5 px-2.5 bg-primary border border-black text-white flex items-center gap-2 shrink-0 mx-2">
+            <button className="text-sm py-1.5 px-2.5 bg-primary font-mons text-white flex items-center gap-2 shrink-0 mx-2">
               <FaEdit /> Write a Review
             </button>
           </AccordionTrigger>
@@ -142,7 +142,7 @@ const Reviews: React.FC<ReviewsProps> = ({
               onSubmit={(e) => handleSubmit(e)}
               className="flex flex-col border-b border-gray-500"
             >
-              <h2 className="font-bold text-lg my-3">Your Review</h2>
+              <h2 className="font-mons text-lg my-3">Your Review</h2>
               <p>
                 <span className="text-red-500">*</span> Score
               </p>
@@ -177,11 +177,8 @@ const Reviews: React.FC<ReviewsProps> = ({
                 onChange={(e) => handleChange(e)}
               />
 
-              <button className="mb-5 ml-auto flex justify-center border py-1 border-black bg-transparent text-white  dark:border-white relative group transition duration-200">
-                <div className="absolute bottom-0 right-0 bg-primary h-full w-full group-hover:scale-x-90 group-hover:scale-y-75 transition-all duration-200" />
-                <span className="relative text-sm font-semibold py-1 px-2 tracking-wider">
-                  Post
-                </span>
+              <button className="font-mons mb-5 ml-auto py-2 px-4 bg-primary hover:bg-primary-hover text-white  dark:border-white transition duration-200">
+                Post
               </button>
             </form>
           </AccordionContent>

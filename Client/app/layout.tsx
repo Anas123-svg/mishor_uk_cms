@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import WhatsApp from "@/components/WhatsApp";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.jpg";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import useAuthStore from "@/store/authStore";
@@ -90,9 +90,9 @@ export default function RootLayout({
               opacity: 0,
               transition: { duration: 1, delay: 1 },
             }}
-            className="bg-white p-4"
+            className="bg-white p-2"
           >
-            <img src={logo.src} alt="Mishor" className="w-24" />
+            <img src={logo.src} alt="Mishor" className="w-52" />
           </motion.div>
         </motion.div>
         <motion.div>

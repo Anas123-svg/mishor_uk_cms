@@ -28,10 +28,10 @@ const page = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/search?title=${query}`
+        `${process.env.NEXT_PUBLIC_API_URL}/products/search?query=${query}&page=${page}`
       );
-      setProducts(response.data);
-      // setTotalPages(response.data.totalPages);
+      setProducts(response.data.products);
+      setTotalPages(response.data.lastPage);
     } catch (error) {
       console.log(error);
     } finally {

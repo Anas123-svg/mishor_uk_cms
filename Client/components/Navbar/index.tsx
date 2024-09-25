@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { CiUser } from "react-icons/ci";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.jpg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,18 +46,18 @@ const Navbar = () => {
 
   useEffect(() => {
     if (user) {
-      initCart(user.cart);
-      initWishlist(user.wishlist);
+      initCart(user.carts);
+      initWishlist(user.wishlists);
     }
   }, [user]);
 
   return (
-    <div className="top-0 z-50 fixed bg-white shadow-lg text-black border-b border-gray-200 px-6 md:px-16 lg:px-24 py-3 w-full flex items-center justify-between">
+    <div className="top-0 z-50 fixed bg-white shadow-lg text-black border-b border-gray-200 px-6 md:px-16 lg:px-24 py-5 w-full flex items-center justify-between">
       <Link href="/">
         <img
           src={logo.src}
           alt="logo"
-          className="w-16 hover:scale-105 transition-transform duration-300"
+          className="w-32 hover:scale-105 transition-transform duration-300"
         />
       </Link>
 
@@ -130,10 +130,10 @@ const Navbar = () => {
             <DropdownMenuTrigger className="outline-none ring-0">
               <CiUser className="text-3xl text-gray-800 hover:text-gray-900 hover:scale-110 transition-transform duration-300 cursor-pointer" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded-lg shadow-lg py-2 bg-white border border-gray-200">
+            <DropdownMenuContent className="rounded-none shadow-lg py-2 bg-white border border-gray-200">
               <Profile />
               <DropdownMenuItem
-                className="text-center text-gray-700 hover:bg-gray-100 py-2 rounded-md transition-colors"
+                className="flex items-center justify-center text-gray-700 hover:bg-neutral-100 py-2 transition-colors"
                 onClick={() => {
                   logout();
                   setUser(null);
