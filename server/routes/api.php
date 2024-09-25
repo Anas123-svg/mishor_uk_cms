@@ -64,7 +64,7 @@ Route::post('login', [UserController::class, 'login']);
 ///Route::put('user/update', [UserController::class, 'update']);
 
 
-
+Route::get('/products/filter-by-price', [ProductController::class, 'filterByPrice']);
 Route::get('/products/count', action: [ProductController::class, 'getProductCount']);
 Route::get('products/search', [ProductController::class, 'search']);
 

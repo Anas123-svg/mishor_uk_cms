@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Product;
 use App\Models\Category; 
@@ -10,10 +11,22 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with('images', 'reviews.user', 'category')
-            ->paginate(12);
+        $minPrice = $request->query('min_price');
+        $maxPrice = $request->query('max_price');
     
-   
+
+        $query = Product::with('images', 'reviews.user', 'category');
+    
+        if ($minPrice !== null) {
+            $query->where('price', '>=', $minPrice);
+        }
+    
+        if ($maxPrice !== null) {
+            $query->where('price', '<=', $maxPrice);
+        }
+    
+        $products = $query->paginate(12);
+    
         $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
         });
@@ -26,6 +39,7 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
+    
     
     public function show($id)
     {
@@ -99,22 +113,21 @@ class ProductController extends Controller
         return response()->json(null, 204);
     }
 
-    public function getProductsByCategory(Request $request) 
+    public function getProductsByCategory(Request $request)  
     {
         \Log::info('Received request for products by category', ['query' => $request->query()]);
     
         $categoryName = $request->query('category_name');
-        
+    
         if (!$categoryName) {
             \Log::warning('Category name not provided in the request');
             return response()->json(['message' => 'Category name is required'], 400);
         }
     
         $normalizedCategoryName = trim($categoryName);
-        $normalizedCategoryName = str_replace(['+', '%20'], ' ', $normalizedCategoryName); // Replace '+' and '%20' with space
         \Log::info('Normalized category name', ['normalizedCategoryName' => $normalizedCategoryName]);
     
-        $category = Category::where('name', 'like', '%' . $normalizedCategoryName . '%')->first();
+        $category = Category::where('name', '=', $normalizedCategoryName)->first();
     
         if ($category) {
             \Log::info('Category found', ['id' => $category->id, 'name' => $category->name]);
@@ -126,7 +139,7 @@ class ProductController extends Controller
         $products = Product::where('category_id', $category->id)
                             ->with('images', 'reviews.user')
                             ->paginate(12);
-        
+    
         \Log::info('Number of products found for category', ['count' => $products->total()]);
     
         if ($products->isEmpty()) {
@@ -149,7 +162,8 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
-                        
+    
+                
     private function transformProduct($product)
     {
         return [
@@ -215,6 +229,46 @@ class ProductController extends Controller
         'total' => $products->total(),
     ]);
 }
+
+public function filterByPrice(Request $request)
+{
+  //  Log::info('filterByPrice called', [
+    //    'min_price' => $request->query('min_price'),
+      //  'max_price' => $request->query('max_price'),
+    //]);
+
+    $minPrice = $request->query('min_price');
+    $maxPrice = $request->query('max_price');
+
+    $query = Product::with('images', 'reviews.user', 'category');
+
+    if ($minPrice !== null) {
+        $query->where('price', '>=', $minPrice);
+       // Log::info('Min price filter applied', ['min_price' => $minPrice]);
+    }
+
+    if ($maxPrice !== null) {
+        $query->where('price', '<=', $maxPrice);
+       // Log::info('Max price filter applied', ['max_price' => $maxPrice]);
+    }
+
+    $products = $query->paginate(12);
+
+    //Log::info('Products retrieved', ['total_products' => $products->total()]);
+
+    $transformedProducts = $products->getCollection()->map(function ($product) {
+        return $this->transformProduct($product);
+    });
+
+    return response()->json([
+        'products' => $transformedProducts,
+        'currentPage' => $products->currentPage(),
+        'lastPage' => $products->lastPage(),
+        'perPage' => $products->perPage(),
+        'total' => $products->total(),
+    ]);
+}
+
 
 }
 
