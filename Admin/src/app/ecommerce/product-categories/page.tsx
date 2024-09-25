@@ -219,7 +219,7 @@ const Categories = () => {
                 </div>
                 <div className="col-span-2 flex items-center">
                   <p className="text-sm text-black dark:text-white">
-                    {category.products}
+                    {category.products_count}
                   </p>
                 </div>
                 <div className="col-span-2 flex items-center">
