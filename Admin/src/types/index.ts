@@ -33,17 +33,28 @@ type Admin = {
   updated_at: string;
 };
 
+type Review = {
+  _id: string;
+  name: string;
+  email: string;
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 type Product = {
   id: number;
   title: string;
-  description: string;
   price: number;
-  discounted_price: number | null;
-  in_stock: number;
-  in_stock_quantity: number;
+  discountedPrice: number | null;
   images: string[];
-  reviews: any[];
   category: string;
+  inStock: boolean;
+  inStockQuantity: number;
+  description: string;
+  reviews: Review[];
   created_at: string;
   updated_at: string;
 };
@@ -51,7 +62,7 @@ type Product = {
 type Category = {
   id: number;
   name: string;
-  products: number;
+  products_count: number;
   created_at: string;
   updated_at: string;
 };
