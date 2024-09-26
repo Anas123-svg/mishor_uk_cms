@@ -113,22 +113,22 @@ class ProductController extends Controller
         return response()->json(null, 204);
     }
 
-    public function getProductsByCategory(Request $request)  
+    public function getProductsByCategory(Request $request)
     {
         \Log::info('Received request for products by category', ['query' => $request->query()]);
     
         $categoryName = $request->query('category_name');
-    
+        
         if (!$categoryName) {
             \Log::warning('Category name not provided in the request');
             return response()->json(['message' => 'Category name is required'], 400);
         }
-    
+        
         $normalizedCategoryName = trim($categoryName);
         \Log::info('Normalized category name', ['normalizedCategoryName' => $normalizedCategoryName]);
     
         $category = Category::where('name', '=', $normalizedCategoryName)->first();
-    
+        
         if ($category) {
             \Log::info('Category found', ['id' => $category->id, 'name' => $category->name]);
         } else {
@@ -136,9 +136,22 @@ class ProductController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
     
-        $products = Product::where('category_id', $category->id)
-                            ->with('images', 'reviews.user')
-                            ->paginate(12);
+        $productQuery = Product::where('category_id', $category->id)->with('images', 'reviews.user');
+    
+        $minPrice = $request->query('min_price');
+        $maxPrice = $request->query('max_price');
+        
+        if ($minPrice !== null) {
+            \Log::info('Applying minimum price filter', ['min_price' => $minPrice]);
+            $productQuery->where('price', '>=', $minPrice);
+        }
+        
+        if ($maxPrice !== null) {
+            \Log::info('Applying maximum price filter', ['max_price' => $maxPrice]);
+            $productQuery->where('price', '<=', $maxPrice);
+        }
+    
+        $products = $productQuery->paginate(12);
     
         \Log::info('Number of products found for category', ['count' => $products->total()]);
     
@@ -162,7 +175,7 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
-    
+        
                 
     private function transformProduct($product)
     {
@@ -271,4 +284,7 @@ public function filterByPrice(Request $request)
 
 
 }
+
+
+
 
