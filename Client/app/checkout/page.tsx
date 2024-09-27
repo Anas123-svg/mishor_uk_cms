@@ -108,10 +108,12 @@ const page = () => {
   // }, [items]);
 
   return (
-    <div className="px-8 md:px-16 lg:px-24 pt-28 pb-10 min-h-screen">
+    <div className="px-6 md:px-12 lg:px-24 pt-28 pb-10 min-h-screen">
       <div className="text-center mb-5">
-        <h1 className="text-3xl text-gray-900">Checkout</h1>
-        <p className="mt-4 text-gray-700">
+        <h1 className="text-2xl md:text-3xl text-gray-900 tracking-wide">
+          Checkout
+        </h1>
+        <p className="text-sm md:text-base mt-4 text-gray-700">
           Fill in your details to place your order. We will deliver it to you as
           soon as possible.
         </p>

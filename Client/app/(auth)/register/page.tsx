@@ -84,11 +84,11 @@ const Register = () => {
 
   return (
     <div className="flex items-center justify-center flex-col min-h-screen pt-32 py-10 px-6 md:px-12 lg:px-24">
-      <h1 className="text-4xl font-mons tracking-wide">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide">
         Create your{" "}
         <span className="text-white bg-primary pr-2 pl-1 italic">Account!</span>{" "}
       </h1>
-      <div className="w-full max-w-[500px]">
+      <div className="mt-2 w-full max-w-[500px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField

@@ -32,7 +32,7 @@ const Reviews: React.FC<ReviewsProps> = ({
   const [review, setReview] = useState<Partial<Review>>({
     rating: 0,
     title: "",
-    comment: "",
+    review: "",
   });
 
   const labels: { [key: number]: string } = {
@@ -55,12 +55,12 @@ const Reviews: React.FC<ReviewsProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (review.rating === 0 || review.title === "" || review.comment === "") {
+    if (review.rating === 0 || review.title === "" || review.review === "") {
       toast.error("Please fill all the fields");
       return;
     }
     onSubmitReview(review);
-    setReview({ rating: 0, title: "", comment: "" });
+    setReview({ rating: 0, title: "", review: "" });
   };
 
   const renderStars = (value: number, readOnly = false) => {
@@ -99,7 +99,7 @@ const Reviews: React.FC<ReviewsProps> = ({
     >
       <h1
         className=" 
-        text-3xl font-mons tracking-wide text-gray-800 mb-5"
+        text-xl sm:text-2xl md:text-3xl font-mons tracking-wide text-gray-800 mb-5"
       >
         Reviews
       </h1>
@@ -173,7 +173,7 @@ const Reviews: React.FC<ReviewsProps> = ({
                 id="review"
                 name="review"
                 rows={3}
-                value={review.comment || ""}
+                value={review.review || ""}
                 onChange={(e) => handleChange(e)}
               />
 
@@ -189,27 +189,31 @@ const Reviews: React.FC<ReviewsProps> = ({
           reviews
             .sort(
               (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
             )
             .map((d, i) => (
               <div
                 className="w-full border-b border-black py-3 group flex gap-2"
                 key={i}
               >
-                <span className="shrink-0 text-center leading-10 font-bold text-white h-10 w-10 bg-primary rounded-full mt-1">
-                  {d.name.slice(0, 1)}
+                <span className="shrink-0 text-center leading-10 font-semibold font-mons text-white h-10 w-10 bg-primary rounded-full mt-1">
+                  {d.reviewer_name?.slice(0, 1)}
                 </span>
                 <div className="w-full flex flex-col space-y-0.5">
-                  <h2 className="flex justify-between font-bold text-primary-dark">
-                    <span>{d.name}</span>
+                  <h2 className="flex justify-between font-mons text-primary-dark">
+                    <span>{d.reviewer_name}</span>
                     <span className="text-gray-500 text-xs">
-                      {d.createdAt.slice(0, 10).split("-").reverse().join("-")}
+                      {d.created_at
+                        ?.slice(0, 10)
+                        .split("-")
+                        .reverse()
+                        .join("-")}
                     </span>
                   </h2>
                   <div className="items-center w-full flex justify-between">
                     <div className="flex">{renderStars(d.rating, true)}</div>
-                    {d.email === userEmail && (
+                    {d.user_email === userEmail && (
                       <button
                         className="text-gray-500 invisible group-hover:visible"
                         onClick={() => onDeleteReview(i)}
@@ -218,8 +222,8 @@ const Reviews: React.FC<ReviewsProps> = ({
                       </button>
                     )}
                   </div>
-                  <h3 className="font-semibold">{d.title}</h3>
-                  <p className="font-light text-sm">{d.comment}</p>
+                  <h3 className="font-mons">{d.title}</h3>
+                  <p className="font-light text-sm">{d.review}</p>
                 </div>
               </div>
             ))

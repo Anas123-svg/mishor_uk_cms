@@ -21,14 +21,16 @@ type User = {
 };
 
 type Review = {
-  _id: string;
-  name: string;
-  email: string;
+  id: number;
+  product_id: number;
+  user_id: number;
+  reviewer_name: string;
+  user_email: string;
   rating: number;
   title: string;
-  comment: string;
-  createdAt: string;
-  updatedAt: string;
+  review: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type Product = {

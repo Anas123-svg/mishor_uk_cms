@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -56,7 +56,7 @@ const faqs: FAQ[] = [
 
 const Faqs = () => {
   return (
-    <div className="px-6 sm:px-8 md:px-16 lg:px-24 py-20">
+    <div className="px-6 md:px-16 lg:px-24 py-20">
       <h2 className="text-2xl md:text-3xl font-mons tracking-wider">
         Frequently Asked Questions (FAQs)
       </h2>

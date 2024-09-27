@@ -11,7 +11,7 @@ interface Props {
 const Grid = ({ products, loading }: Props) => {
   return loading ? (
     <div className="flex justify-center items-center h-screen">
-      <ReactLoading type="bars" color="#000000" />
+      <ReactLoading type="spinningBubbles" color="#D01816" />
     </div>
   ) : products.length > 0 ? (
     <div>

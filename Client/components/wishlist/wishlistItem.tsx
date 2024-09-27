@@ -22,7 +22,9 @@ const WishlistItem = ({ item }: Props) => {
         className="w-20 h-20 mr-4 object-cover"
       />
       <div className="flex-1">
-        <h3 className="mb-1 font-mons">{item.product.title}</h3>
+        <h3 className="mb-1 text-sm md:text-base font-mons">
+          {item.product.title}
+        </h3>
         <p className="font-mons text-sm">
           £{" "}
           {(item.product.discountedPrice
