@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import PhotosUploader from "@/components/checkout/uploader";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,7 +44,6 @@ const formSchema = z.object({
 const page = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [paymentMethod, setPaymentMethod] = useState("cod");
-  const [images, setImages] = useState([]);
   const { user, token } = useAuthStore();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,36 +60,31 @@ const page = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (paymentMethod == "bank" && images.length == 0) {
-      toast.error("Please upload the transaction receipt");
-      return;
-    }
     setIsSubmitting(true);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/order`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders`,
         {
+          user_id: user ? user.id : null,
           name: values.name,
           email: values.email,
           phone: values.phone,
-          order: items.map((item) => ({
+          address: values.address,
+          city: values.city,
+          postalCode: values.postalCode,
+          status: "pending",
+          country: values.country,
+          items: items.map((item) => ({
             quantity: item.quantity,
-            product: item.product.id,
+            product_id: item.product.id,
           })),
-          shippingAddress: {
-            address: values.address,
-            city: values.city,
-            postalCode: values.postalCode,
-            country: values.country,
-          },
           paymentMethod,
-          paymentReceipt: images[0] || "",
           subTotal: getTotalPrice(),
           delivery: getTotalPrice() > 10000 ? 0 : 300,
           total: getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300),
         }
       );
-      toast.success(response.data.message);
+      toast.success("Order placed successfully");
       clearCart(user ? true : false, token);
       router.push("/");
     } catch (error: any) {
@@ -241,42 +234,10 @@ const page = () => {
                   onValueChange={(e) => setPaymentMethod(e)}
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="bank" id="bank" />
-                    <Label htmlFor="bank">Bank Transfer</Label>
-                  </div>
-                  {paymentMethod == "bank" && (
-                    <div className="my-1 p-2  border border-black">
-                      <p className="text-xs">
-                        Please transfer the total amount to the following bank
-                        account: <br />
-                        Account Name:{" "}
-                        <span className="font-semibold font-mons">ABC</span>
-                        <br />
-                        Account Number:{" "}
-                        <span className="font-semibold font-mons">
-                          12345678
-                        </span>
-                        <br />
-                        Bank Name:{" "}
-                        <span className="font-semibold font-mons">
-                          ABC Bank
-                        </span>
-                        <br />
-                        <p className="text-xs">
-                          After transferring the amount, please attach the
-                          transaction receipt below to confirm your order.
-                        </p>
-                      </p>
-                      <PhotosUploader
-                        maxPhotos={1}
-                        addedPhotos={images}
-                        onChange={(photos: any) => setImages(photos)}
-                      />
-                    </div>
-                  )}
-                  <div className="flex items-center space-x-2">
                     <RadioGroupItem value="cod" id="cod" />
-                    <Label htmlFor="cod">Cash on Delivery (COD)</Label>
+                    <Label htmlFor="cod">
+                      Check your mail for the order confirmation and invoice.
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>

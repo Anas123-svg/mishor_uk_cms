@@ -1,6 +1,13 @@
 import React from "react";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 import img from "@/assets/contact.jpg";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us | Mishor",
+  description:
+    "Our friendly and professional team is ready to assist you with all inquiries.",
+};
 
 const ContactUs = () => {
   return (

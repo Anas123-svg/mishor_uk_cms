@@ -30,6 +30,7 @@ import {
 import { GoFilter } from "react-icons/go";
 import Grid from "@/components/grid";
 import { useParams } from "next/navigation";
+import { Helmet } from "react-helmet";
 
 const page = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -77,6 +78,15 @@ const page = () => {
 
   return (
     <div className="pt-32 px-6 md:px-12 lg:px-24">
+      <Helmet>
+        <title>{decodeURIComponent(category.toString())} | Mishor</title>
+        <meta
+          name="description"
+          content={`Explore our wide range of premium health and safety equipment in the ${decodeURIComponent(
+            category.toString()
+          )} category. Whether you need compliance tools or essential safety gear, we have everything to safeguard your workplace and ensure regulatory compliance.`}
+        />
+      </Helmet>
       <div className="text-center mb-12 flex flex-col items-center">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide">
           {decodeURIComponent(category.toString())}
