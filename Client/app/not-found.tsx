@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import img from "@/assets/notfound.png";
+import img from "@/assets/notFound.png";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
