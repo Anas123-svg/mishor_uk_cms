@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sheet";
 import { GoFilter } from "react-icons/go";
 import Grid from "@/components/grid";
+import { Helmet } from "react-helmet";
 
 const page = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -72,6 +73,13 @@ const page = () => {
 
   return (
     <div className="pt-32 px-6 md:px-12 lg:px-24">
+      <Helmet>
+        <title>Products | Mishor</title>
+        <meta
+          name="description"
+          content="Discover premium health and safety equipment designed to protect your business. Explore our range of compliance tools, safety gear, and solutions built for reliability and effectiveness. Equip your workplace with the essentials to ensure safety and compliance!"
+        />
+      </Helmet>
       <div className="text-center mb-12 flex flex-col items-center">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide">
           Our Catalogue

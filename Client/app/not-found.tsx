@@ -1,6 +1,13 @@
 import Link from "next/link";
 import React from "react";
 import img from "@/assets/notfound.png";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "404 | Mishor",
+  description: "Page not found",
+};
+
 const page = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center px-8">

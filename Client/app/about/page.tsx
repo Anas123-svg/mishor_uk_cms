@@ -2,6 +2,13 @@ import Faqs from "@/components/home/faqs";
 import React from "react";
 import img1 from "@/assets/about1.webp";
 import img2 from "@/assets/about2.jpg";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Mishor",
+  description:
+    "At Mishor Compliance Services, our Health and Safety Consulting services are crafted to guide your business through the intricacies of workplace safety, ensuring compliance with current legislation and fostering a culture of continuous improvement.",
+};
 
 const AboutUs = () => {
   return (

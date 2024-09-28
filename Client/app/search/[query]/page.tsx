@@ -6,6 +6,7 @@ import { Product } from "@/types";
 import Grid from "@/components/grid";
 import { Search } from "@/components/ui/search";
 import { useParams } from "next/navigation";
+import { Helmet } from "react-helmet";
 import {
   Pagination,
   PaginationContent,
@@ -45,6 +46,13 @@ const page = () => {
 
   return (
     <div className="pt-32 pb-10 px-6 md:px-12 lg:px-24">
+      <Helmet>
+        <title>Search | Mishor</title>
+        <meta
+          name="description"
+          content="Easily find the right safety tools for your business. From tailored compliance services to essential health and safety equipment like fire extinguishers and alarms, discover everything you need to ensure a safer, more compliant workplace!"
+        />
+      </Helmet>
       <div className="text-center mb-12 flex flex-col items-center">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide">
           Search
