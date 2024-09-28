@@ -35,11 +35,17 @@ class OrderController extends Controller
         $order = Order::create($validated);
 
         foreach ($validated['items'] as $item) {
+            // Create order item
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity']
             ]);
+
+            // Update product stock
+            $product = Product::find($item['product_id']);
+            $product->in_stock_quantity -= $item['quantity'];
+            $product->save();
         }
 
         $orderItems = OrderItem::where('order_id', $order->id)
@@ -85,25 +91,42 @@ class OrderController extends Controller
     
         $validated = $request->validate([
             'user_id' => 'nullable|exists:users,id',
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'postalCode' => 'required|string|max:20',
-            'country' => 'required|string|max:100',
-            'status' => 'required|in:pending,processing,completed,cancelled',
-            'paymentMethod' => 'required|string|max:100',
-            'subTotal' => 'required|numeric|min:0',
-            'delivery' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:20',
+            'address' => 'sometimes|string|max:255',
+            'city' => 'sometimes|string|max:100',
+            'postalCode' => 'sometimes|string|max:20',
+            'country' => 'sometimes|string|max:100',
+            'status' => 'sometimes|in:pending,processing,completed,cancelled',
+            'paymentMethod' => 'sometimes|string|max:100',
+            'subTotal' => 'sometimes|numeric|min:0',
+            'delivery' => 'sometimes|numeric|min:0',
+            'total' => 'sometimes|numeric|min:0',
             'items' => 'nullable|array',
             'items.*.product_id' => 'required_with:items|exists:products,id',
             'items.*.quantity' => 'required_with:items|integer|min:1',
         ]);
     
+  
+        if ($order->status !== 'cancelled' && $validated['status'] === 'cancelled') {
+            foreach ($order->orderItems as $orderItem) {
+             
+                $product = Product::find($orderItem->product_id);
+                $product->in_stock_quantity += $orderItem->quantity;
+                $product->save();
+            }
+        }
+
+    
         $order->update($validated);
     
         if (isset($validated['items'])) {
+            foreach ($order->orderItems as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                $product->in_stock_quantity += $orderItem->quantity;
+                $product->save();
+            }
+
             OrderItem::where('order_id', $order->id)->delete();
     
             foreach ($validated['items'] as $item) {
@@ -112,6 +135,10 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity']
                 ]);
+
+                $product = Product::find($item['product_id']);
+                $product->in_stock_quantity -= $item['quantity'];
+                $product->save();
             }
         }
     

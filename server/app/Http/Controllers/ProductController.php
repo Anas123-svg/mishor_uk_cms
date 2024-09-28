@@ -14,14 +14,30 @@ class ProductController extends Controller
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
     
-
+        $lowestPrice = Product::min('price');
+        $highestPrice = Product::max('price');
+    
         $query = Product::with('images', 'reviews.user', 'category');
     
-        if ($minPrice !== null) {
+
+        if ($minPrice === 'min') {
+            $minPrice = $lowestPrice; 
+        } elseif ($minPrice === 'max') {
+            $minPrice = $highestPrice;
+        }
+    
+        if ($maxPrice === 'min') {
+            $maxPrice = $lowestPrice; 
+        } elseif ($maxPrice === 'max') {
+            $maxPrice = $highestPrice; 
+        }
+    
+        
+        if ($minPrice !== null && is_numeric($minPrice)) {
             $query->where('price', '>=', $minPrice);
         }
     
-        if ($maxPrice !== null) {
+        if ($maxPrice !== null && is_numeric($maxPrice)) {
             $query->where('price', '<=', $maxPrice);
         }
     
@@ -39,7 +55,7 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
-    
+        
     
     public function show($id)
     {
@@ -118,17 +134,17 @@ class ProductController extends Controller
         \Log::info('Received request for products by category', ['query' => $request->query()]);
     
         $categoryName = $request->query('category_name');
-        
+    
         if (!$categoryName) {
             \Log::warning('Category name not provided in the request');
             return response()->json(['message' => 'Category name is required'], 400);
         }
-        
+    
         $normalizedCategoryName = trim($categoryName);
         \Log::info('Normalized category name', ['normalizedCategoryName' => $normalizedCategoryName]);
     
         $category = Category::where('name', '=', $normalizedCategoryName)->first();
-        
+    
         if ($category) {
             \Log::info('Category found', ['id' => $category->id, 'name' => $category->name]);
         } else {
@@ -138,16 +154,33 @@ class ProductController extends Controller
     
         $productQuery = Product::where('category_id', $category->id)->with('images', 'reviews.user');
     
+        
+        $lowestPrice = Product::min('price');
+        $highestPrice = Product::max('price');
+    
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
+    
         
-        if ($minPrice !== null) {
-            \Log::info('Applying minimum price filter', ['min_price' => $minPrice]);
+        if ($minPrice === 'min') {
+            $minPrice = $lowestPrice; 
+        } elseif ($minPrice === 'max') {
+            $minPrice = $highestPrice; 
+        }
+    
+        
+        if ($maxPrice === 'min') {
+            $maxPrice = $lowestPrice; 
+        } elseif ($maxPrice === 'max') {
+            $maxPrice = $highestPrice; 
+        }
+    
+        
+        if ($minPrice !== null && is_numeric($minPrice)) {
             $productQuery->where('price', '>=', $minPrice);
         }
-        
-        if ($maxPrice !== null) {
-            \Log::info('Applying maximum price filter', ['max_price' => $maxPrice]);
+    
+        if ($maxPrice !== null && is_numeric($maxPrice)) {
             $productQuery->where('price', '<=', $maxPrice);
         }
     
@@ -162,7 +195,7 @@ class ProductController extends Controller
         }
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
-            return $this->transformProduct($product); 
+            return $this->transformProduct($product);
         });
     
         \Log::info('Transformed products', ['transformedProducts' => $transformedProducts]);
@@ -175,6 +208,7 @@ class ProductController extends Controller
             'total' => $products->total(),
         ]);
     }
+    
         
                 
     private function transformProduct($product)
