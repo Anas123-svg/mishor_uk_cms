@@ -22,7 +22,7 @@ class OrderController extends Controller
             'city' => 'required|string|max:100',
             'postalCode' => 'required|string|max:20',
             'country' => 'required|string|max:100',
-            'status' => 'required|in:pending,processing,completed,cancelled',
+            'status' => 'nullable|in:pending,processing,completed,cancelled',
             'paymentMethod' => 'required|string|max:100',
             'subTotal' => 'required|numeric|min:0',
             'delivery' => 'required|numeric|min:0',
