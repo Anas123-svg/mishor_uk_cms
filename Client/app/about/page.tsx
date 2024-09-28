@@ -6,21 +6,21 @@ import img2 from "@/assets/about2.jpg";
 const AboutUs = () => {
   return (
     <>
-      <div className="pt-24 px-6 md:px-16 lg:px-24">
-        <section className="py-20 bg-white text-center md:text-left">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+      <div className="pt-32 px-6 md:px-12 lg:px-24">
+        <section className="bg-white text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="w-full md:w-1/2 px-6">
-              <h1 className="text-4xl font-mons tracking-wider mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wider mb-4">
                 About Us
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-base md:text-lg text-gray-600">
                 At Mishor Compliance Services, our Health and Safety Consulting
                 services are crafted to guide your business through the
                 intricacies of workplace safety, ensuring compliance with
                 current legislation and fostering a culture of continuous
                 improvement.
               </p>
-              <p className="text-lg text-gray-600 mt-2">
+              <p className="text-base md:text-lg text-gray-600 mt-2">
                 Our expert consultants act as your partners, providing bespoke
                 advice and practical solutions tailored to your unique
                 operational needs.
@@ -37,7 +37,7 @@ const AboutUs = () => {
         </section>
 
         <section className="py-16 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
+          <div>
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="w-full md:w-1/2 px-6">
                 <img
@@ -47,7 +47,7 @@ const AboutUs = () => {
                 />
               </div>
               <div className="w-full md:w-1/2 mt-8 md:mt-0 px-6">
-                <h2 className="text-4xl font-mons tracking-wider mb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wider mb-4">
                   Our Mission
                 </h2>
                 <p className="text-md text-gray-600 leading-relaxed">
@@ -64,7 +64,7 @@ const AboutUs = () => {
 
         <section className="py-16 bg-white">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-4xl font-mons tracking-wider mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wider mb-6">
               Our Story
             </h2>
             <p className="text-md text-gray-600 leading-relaxed max-w-4xl mx-auto">
@@ -80,8 +80,8 @@ const AboutUs = () => {
           </div>
         </section>
         <section className="py-16 bg-gray-50">
-          <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-mons tracking-wider mb-6">
+          <div className="p-5 text-center">
+            <h2 className="text-2xl md:text-3xl font-mons tracking-wider mb-6">
               Mishor by the Numbers
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

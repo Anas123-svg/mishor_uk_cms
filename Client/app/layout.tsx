@@ -109,7 +109,7 @@ export default function RootLayout({
               },
             }}
           />
-          <WhatsApp />
+          {/* <WhatsApp /> */}
         </motion.div>
       </body>
     </html>

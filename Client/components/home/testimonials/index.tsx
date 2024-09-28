@@ -29,33 +29,35 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-gray-50 py-20 px-6 md:px-12 lg:px-24">
       <div className="text-center mb-12">
-        <h2 className="text-4xl tracking-wider font-mons">Testimonials</h2>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl tracking-wider font-mons">
+          Testimonials
+        </h2>
         <p className="text-gray-600 mt-2">
           See what our clients have to say about our services.
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {testimonials.map((testimonial) => (
           <div
             key={testimonial.id}
             className="bg-white p-8 rounded-lg shadow-lg text-center hover:-translate-y-5 transition duration-300"
           >
-            <div className="w-24 h-24 mx-auto mb-6 relative">
+            <div className="w-16 h-16  sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-6 relative">
               <img
                 src={testimonial.image}
                 alt={testimonial.name}
                 className="object-cover rounded-full w-full h-full"
               />
             </div>
-            <p className="text-gray-600 mb-4">
+            <p className="text-sm md:text-base text-gray-600 mb-4">
               <span className="text-primary text-2xl font-bold">“</span>
               {testimonial.quote}
               <span className="text-primary text-2xl font-bold">”</span>
             </p>
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-medium text-gray-800">
               {testimonial.name}
             </h3>
           </div>

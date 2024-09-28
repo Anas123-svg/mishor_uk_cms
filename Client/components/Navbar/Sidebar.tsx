@@ -1,200 +1,126 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { navLinks } from "@/constants";
-import Link from "next/link";
-import Profile from "../profile";
-import Wishlist from "../wishlist";
-import Cart from "../cart";
+import React from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import toast from "react-hot-toast";
+  Sheet,
+  SheetContent,
+  SheetClose,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { HiBars3 } from "react-icons/hi2";
+import { CiUser } from "react-icons/ci";
+import Link from "next/link";
 import useAuthStore from "@/store/authStore";
 import { logout } from "@/hooks/auth";
+import toast from "react-hot-toast";
+import Cart from "../cart";
+import Wishlist from "../wishlist";
+import Profile from "../profile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Category } from "@/types";
 
-const variants = {
-  initial: {
-    scaleX: 0,
-  },
-  open: {
-    scaleX: 1,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
-  },
-  closed: {
-    scaleX: 0,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 40,
-    },
-  },
-};
-const Sidebar = ({ color }: { color: string }) => {
-  const { user, setUser, setToken } = useAuthStore();
-  const [open, setOpen] = useState(false);
-
+const Sidebar = ({ categories }: { categories: Category[] }) => {
+  const { user, setToken, setUser } = useAuthStore();
   return (
-    <motion.div className="md:hidden" animate={open ? "open" : "closed"}>
-      <motion.div
-        className="text-3xl font-bold z-50 fixed top-0 flex items-center px-5 py-10 right-0 bottom-0 bg-primary w-full text-black origin-right h-screen"
-        variants={variants}
-      >
-        <ul className="space-y-4 w-full max-h-[75vh] overflow-scroll px-5">
-          {navLinks.map((link, index) => (
-            <li key={index}>
-              {link.children ? (
-                <Accordion type="single" collapsible>
-                  <AccordionItem value={`item-${index}`}>
-                    <AccordionTrigger className="flex items-center justify-between px-4 py-3 text-lg font-semibold text-gray-900 bg-gray-100 rounded-md shadow-md hover:bg-gray-200 transition duration-300">
-                      {link.label}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="pl-4 pt-2 mt-2 space-y-1 text-lg text-gray-800 bg-white rounded-md shadow-inner">
-                        {link.children.map((child, childIndex) => (
-                          <li key={childIndex}>
-                            <Link
-                              onClick={() => setOpen(false)}
-                              href={child.href}
-                              className="test-base font-light block px-4 py-2 rounded-md hover:bg-gray-100 transition duration-300"
-                            >
-                              {child.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              ) : (
-                <Link
-                  onClick={() => setOpen(false)}
-                  href={link.href}
-                  className="block px-4 py-3 text-lg font-semibold text-gray-900 bg-gray-100 rounded-md shadow-md hover:bg-gray-200 transition duration-300"
-                >
-                  {link.label}
-                </Link>
-              )}
-            </li>
-          ))}
-          <li>
-            <Link
-              onClick={() => setOpen(false)}
-              href="/shipping-policy"
-              className="block px-4 py-3 text-lg font-semibold text-gray-900 bg-gray-100 rounded-md shadow-md hover:bg-gray-200 transition duration-300"
-            >
-              Shipping Policy
-            </Link>
-          </li>
-          <li>
-            <Link
-              onClick={() => setOpen(false)}
-              href="/return-policy"
-              className="block px-4 py-3 text-lg font-semibold text-gray-900 bg-gray-100 rounded-md shadow-md hover:bg-gray-200 transition duration-300"
-            >
-              Return Policy
-            </Link>
-          </li>
-        </ul>
-
-        {user?.name ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none ring-0 fixed bottom-5 right-5 pb-2 px-5">
-              <div className="pb-2 px-5 border border-black bg-transparent text-black  dark:border-white relative group transition duration-200">
-                <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-90 group-hover:scale-y-75 transition-all duration-200" />
-                <span className="relative text-sm">Hi, {user?.name}</span>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <div onClick={() => setOpen(false)}>
-                <Profile />
-              </div>
-              <DropdownMenuItem
-                className="cursor-pointer text-center block"
-                onClick={() => {
-                  logout();
-                  setUser(null);
-                  setToken(null);
-                  toast.success("Logged out successfully");
-                  setOpen(false);
-                }}
-              >
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <div
-            className="fixed bottom-5 right-5"
-            onClick={() => setOpen(false)}
-          >
-            <Link
-              href="/login"
-              className="pb-2 px-5 border border-black bg-transparent text-black  dark:border-white relative group transition duration-200"
-            >
-              <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-90 group-hover:scale-y-75 transition-all duration-200" />
-              <span className="relative text-sm">Login/Signup</span>
-            </Link>
-          </div>
-        )}
-        <div className="fixed top-[18px] right-20 space-x-3">
+    <Sheet>
+      <SheetTrigger className="md:hidden">
+        <HiBars3 className="inline-block text-3xl hover:scale-125 transition duration-200" />
+      </SheetTrigger>
+      <SheetContent>
+        <div className="flex space-x-3 md:space-x-5 items-center">
           <Wishlist />
           <Cart />
+          {user?.name ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none ring-0">
+                <CiUser className="text-3xl text-gray-800 hover:text-gray-900 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="rounded-none shadow-lg py-2 bg-white border border-gray-200">
+                <Profile />
+                <DropdownMenuItem
+                  className="flex items-center justify-center text-gray-700 hover:bg-neutral-100 py-2 transition-colors"
+                  onClick={() => {
+                    logout();
+                    setUser(null);
+                    setToken(null);
+                    toast.success("Logged out successfully");
+                  }}
+                >
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <SheetClose>
+                <CiUser className="text-3xl text-gray-800 hover:text-gray-900 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+              </SheetClose>
+            </Link>
+          )}
         </div>
-      </motion.div>
-      <button
-        className={
-          color == "#fff"
-            ? "fixed z-50 top-[30px] right-8"
-            : "fixed z-50 top-10 right-8"
-        }
-        onClick={() => setOpen((prev: any) => !prev)}
-      >
-        <svg width="25" height="25" viewBox="0 0 23 23">
-          <motion.path
-            strokeWidth="1.5"
-            stroke={color}
-            strokeLinecap="round"
-            variants={{
-              closed: { d: "M 2 2.5 L 20 2.5" },
-              open: { d: "M 3 16.5 L 17 2.5" },
-            }}
-          />
-          <motion.path
-            strokeWidth="1.5"
-            stroke={color}
-            strokeLinecap="round"
-            d="M 2 9.423 L 20 9.423"
-            variants={{
-              closed: { opacity: 1 },
-              open: { opacity: 0 },
-            }}
-          />
-          <motion.path
-            strokeWidth="1.5"
-            stroke={color}
-            strokeLinecap="round"
-            variants={{
-              closed: { d: "M 2 16.346 L 20 16.346" },
-              open: { d: "M 3 2.5 L 17 16.346" },
-            }}
-          />
-        </svg>
-      </button>
-    </motion.div>
+        <div className="mt-20 flex flex-col gap-5 items-center justify-center text-lg">
+          <Link
+            href="/"
+            className="flex items-center pb-1 border-b border-transparent hover:border-gray-900 transition-all duration-300 font-mons tracking-widest"
+          >
+            <SheetClose>HOME</SheetClose>
+          </Link>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item">
+              <AccordionTrigger className="py-0 flex items-center pb-1 border-b border-transparent hover:border-gray-900 transition-all duration-300 font-mons tracking-widest">
+                SHOP
+              </AccordionTrigger>
+              <AccordionContent className="py-2 text-base tracking-wide text-center uppercase font-mons font-light">
+                <ul>
+                  <li>
+                    <Link href={`/products/`} className="inline-block py-2">
+                      <SheetClose>Our Catalogue</SheetClose>
+                    </Link>
+                  </li>
+                  {categories.map((category, index) => (
+                    <li key={index}>
+                      <Link
+                        href={`/products/${category.name}`}
+                        className="inline-block py-2"
+                      >
+                        <SheetClose> {category.name} </SheetClose>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Link
+            href="/search"
+            className="flex items-center pb-1 border-b border-transparent hover:border-gray-900 transition-all duration-300 font-mons tracking-widest"
+          >
+            <SheetClose>SEARCH</SheetClose>
+          </Link>
+          <Link
+            href="/about"
+            className="flex items-center pb-1 border-b border-transparent hover:border-gray-900 transition-all duration-300 font-mons tracking-widest"
+          >
+            <SheetClose>ABOUT US</SheetClose>
+          </Link>
+          <Link
+            href="/contact"
+            className="flex items-center pb-1 border-b border-transparent hover:border-gray-900 transition-all duration-300 font-mons tracking-widest"
+          >
+            <SheetClose>CONTACT</SheetClose>
+          </Link>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 

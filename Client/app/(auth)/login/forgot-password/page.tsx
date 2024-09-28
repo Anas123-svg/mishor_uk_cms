@@ -115,7 +115,7 @@ const page = () => {
 
   return (
     <div className="flex items-center justify-center flex-col min-h-screen px-6 md:px-12 lg:px-24">
-      <h1 className="text-4xl font-mons tracking-wide mb-3">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide mb-3">
         Reset your{" "}
         <span className="bg-primary text-white px-2 italic">Password!</span>{" "}
       </h1>{" "}
@@ -123,7 +123,7 @@ const page = () => {
         Please enter the code that will be sent to your email and your new
         password.
       </p>
-      <div className="w-full max-w-[500px]">
+      <div className="mt-2 w-full max-w-[500px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <div className="flex items-end w-full gap-3">

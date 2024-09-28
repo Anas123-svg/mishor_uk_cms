@@ -26,8 +26,8 @@ const Discover = () => {
     }
   };
   return (
-    <div className="px-8 md:px-16 py-20 lg:px-24 xl:px-32">
-      <h1 className="text-4xl text-center tracking-wider font-mons">
+    <div className="px-6 md:px-12 py-20 lg:px-24">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl text-center tracking-wider font-mons">
         Discover our latest products
       </h1>
       <Grid products={products.slice(0, 3)} loading={loading} />

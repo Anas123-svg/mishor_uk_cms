@@ -7,10 +7,10 @@ const AboutUs = () => {
   return (
     <section className="relative bg-gray-50 py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl font-mons tracking-wider">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wider">
           About <span className="text-primary">Mishor</span>
         </h2>
-        <p className="mt-4 font-light text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="mt-4 font-light md:text-lg text-gray-600 max-w-2xl mx-auto">
           At Mishor Compliance Services, our Health and Safety Consulting
           services are crafted to guide your business through the intricacies of
           workplace safety, ensuring compliance with current legislation and
@@ -27,11 +27,11 @@ const AboutUs = () => {
           <div className="bg-white shadow-lg  p-6 min-h-[40vh] hover:-translate-y-5 transition duration-300">
             <div className="flex flex-col items-center">
               <img src={img1.src} className="w-20" />
-              <h3 className="text-xl mt-3 font-mons text-gray-800">
+              <h3 className="text-lg md:text-xl mt-3 font-mons text-gray-800">
                 HEALTH AND SAFETY
               </h3>
             </div>
-            <p className="mt-4 text-gray-600 font-light">
+            <p className="text-sm sm:text-base mt-4 text-gray-600 font-light">
               Our Health and Safety services stand as a pillar of operational
               excellence, ensuring that your workplace is a paragon of safety
               and compliance.
@@ -43,11 +43,11 @@ const AboutUs = () => {
           <div className="bg-white shadow-lg  p-6 min-h-[40vh] hover:-translate-y-5 transition duration-300">
             <div className="flex flex-col items-center">
               <img src={img2.src} className="w-20" />
-              <h3 className="text-xl mt-3 font-mons text-gray-800">
+              <h3 className="text-lg md:text-xl mt-3 font-mons text-gray-800">
                 FIRE SAFETY
               </h3>
             </div>
-            <p className="mt-4 text-gray-600 font-light">
+            <p className="text-sm sm:text-base mt-4 text-gray-600 font-light">
               Mishor Compliance Services delivers an encompassing range of fire
               safety provisions designed to equip your business with the tools
               and knowledge required for impeccable fire safety standards.
@@ -59,11 +59,11 @@ const AboutUs = () => {
           <div className="bg-white shadow-lg  p-6 min-h-[40vh] hover:-translate-y-5 transition duration-300">
             <div className="flex flex-col items-center">
               <img src={img3.src} className="w-20" />
-              <h3 className="text-xl mt-3 font-mons text-gray-800">
+              <h3 className="text-lg md:text-xl mt-3 font-mons text-gray-800">
                 OTHER SERVICES
               </h3>
             </div>
-            <p className="mt-4 text-gray-600 font-light">
+            <p className="text-sm sm:text-base mt-4 text-gray-600 font-light">
               Mishor Compliance Services invites you to join a growing portfolio
               of clients who trust us to safeguard their businesses. Let’s
               embark on a journey towards a safer, more compliant future

@@ -46,15 +46,17 @@ const page = () => {
   return (
     <div className="pt-32 pb-10 px-6 md:px-12 lg:px-24">
       <div className="text-center mb-12 flex flex-col items-center">
-        <h1 className="text-4xl font-mons tracking-wide">Search</h1>
-        <p className="mt-4 text-gray-600 max-w-xl">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons tracking-wide">
+          Search
+        </h1>
+        <p className="text-sm md:text-base mt-4 text-gray-600 max-w-xl">
           Easily find the right safety tools for your business. From tailored
           compliance services to essential health and safety equipment like fire
           extinguishers and alarms, discover everything you need to ensure a
           safer, more compliant workplace!
         </p>
       </div>
-      <div className="flex gap-5 w-full  items-center">
+      <div className="flex flex-col-reverse md:flex-row gap-5 w-full  items-center">
         <h2 className="font-mons shrink-0 border p-2 text-sm sm:text-base">
           {products.length} {products.length > 1 ? "Products" : "Product"}
         </h2>
@@ -68,7 +70,7 @@ const page = () => {
           onSubmit={() => router.push(`/search/${search}`)}
         />
       </div>
-      <h1 className="text-2xl font-mons tracking-wide mt-10">
+      <h1 className="text-lg sm:text-xl md:text-2xl font-mons tracking-wide mt-10">
         Showing Results for "{decodeURIComponent(query.toString())}"
       </h1>
       <Grid loading={loading} products={products} />

@@ -18,7 +18,7 @@ const CartComp = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="relative outline-none">
         <CiShoppingCart className="inline-block text-3xl hover:scale-125 transition duration-200" />
-        <span className="text-primary-hover -top-2 -right-1 h-4 w-4 absolute bg-primary text-white rounded-full p-0.5 text-[10px] flex justify-center items-center">
+        <span className="text-white -top-2 -right-1 h-4 w-4 absolute bg-primary rounded-full p-0.5 text-[10px] flex justify-center items-center">
           {items.length}
         </span>
       </DropdownMenuTrigger>

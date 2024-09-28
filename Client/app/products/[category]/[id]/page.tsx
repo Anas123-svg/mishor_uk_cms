@@ -44,15 +44,17 @@ const page = () => {
 
   return loading ? (
     <div className="flex justify-center items-center h-screen">
-      <ReactLoading type="bars" color="#000000" width={100} />
+      <ReactLoading type="spinningBubbles" color="#D01816" />
     </div>
   ) : product ? (
-    <div className="pt-32 px-8 md:px-16 mb-10 lg:px-24">
+    <div className="pt-32 px-6 md:px-12 lg:px-24 mb-10">
       <div className="flex flex-col md:flex-row">
         <Slider photos={product?.images} />
         <div className="mt-10 md:mt-0 w-full md:w-1/2 md:pl-10 bg-white">
-          <h1 className="text-4xl font-mons mb-5">{product?.title}</h1>
-          <p className="text-lg mb-5 font-mons">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-mons mb-3 md:mb-5">
+            {product?.title}
+          </h1>
+          <p className="md:text-lg mb-3 md:mb-5 font-mons">
             £{" "}
             {(product.discountedPrice
               ? product.discountedPrice
@@ -64,10 +66,10 @@ const page = () => {
               </span>
             )}
           </p>
-          <p className="text-lg mb-5 font-mons">
+          <p className="md:text-lg mb-3 md:mb-5 font-mons">
             Stock Quantity: {product?.inStockQuantity}
           </p>
-          <div className="w-full flex gap-2 mb-10">
+          <div className="w-full flex flex-wrap gap-2 mb-5 md:mb-10">
             {product?.inStock && (
               <div className="flex items-center text-lg text-gray-800 border border-black w-fit">
                 <button
@@ -142,9 +144,9 @@ const page = () => {
               className="group p-3 rounded-full border"
             >
               {inWishlist(product.id) ? (
-                <MdFavorite className="text-tertiary text-2xl group-hover:scale-125 transition duration-200" />
+                <MdFavorite className="text-tertiary text-xl md:text-2xl group-hover:scale-125 transition duration-200" />
               ) : (
-                <MdFavoriteBorder className="text-tertiary text-2xl group-hover:scale-125 transition duration-200" />
+                <MdFavoriteBorder className="text-tertiary text-xl md:text-2xl group-hover:scale-125 transition duration-200" />
               )}
             </button>
           </div>
@@ -162,17 +164,23 @@ const page = () => {
         reviews={product.reviews}
         userEmail={user?.email || ""}
         onSubmitReview={async (review) => {
+          console.log(review);
           try {
-            await axios.put(`/api/product/${id}`, {
-              reviews: [
-                ...product.reviews,
-                {
-                  name: user?.name,
-                  email: user?.email,
-                  ...review,
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/reviews`,
+              {
+                product_id: id,
+                title: review.title,
+                reviewer_name: user?.name,
+                review: review.review,
+                rating: review.rating,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
                 },
-              ],
-            });
+              }
+            );
             getProduct();
             toast.success("Review posted");
           } catch (error) {
@@ -183,8 +191,10 @@ const page = () => {
           try {
             const reviews = product.reviews;
             reviews.splice(index, 1);
-            await axios.put(`/api/product/${id}`, {
-              reviews,
+            await axios.delete(`/api/product/${id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             });
             getProduct();
             toast.success("Review deleted");
