@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Controller as BaseController;
+use App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends BaseController
 {
@@ -130,7 +132,59 @@ class UserController extends BaseController
 
     public function index()
     {
-        $users = User::with(['wishlists.product', 'carts.product'])->get();
+        $users = User::with(['wishlists.product', 'carts.product'])->paginate(12);
+        
         return response()->json($users);
     }
+    
+
+
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'reset_code' => 'required|string|min:6|max:6',
+        ]);
+    
+        $user = User::where('email', $request->email)->first();
+        
+        $resetCode = $request->reset_code;
+    
+        $user->update([
+            'reset_code' => $resetCode,
+            'reset_code_expires_at' => now()->addMinutes(15),
+        ]);
+    
+        \Log::info('Reset Code Stored:', ['email' => $user->email, 'reset_code' => $resetCode, 'expires_at' => $user->reset_code_expires_at]);
+    
+        Mail::to($user->email)->send(new PasswordResetMail($user, $resetCode));
+    
+        return response()->json(['message' => 'Reset code sent to your email.'], 200);
+    }
+            
+    
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'reset_code' => 'required|string|min:6|max:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+    
+        $user = User::where('email', $request->email);
+    
+        if ($user) {
+            $user->update([
+                'password' => Hash::make($request->password),  
+                'reset_code' => null, 
+                'reset_code_expires_at' => null,  
+            ]);
+    
+            return response()->json(['message' => 'Password reset successful.'], 200);
+        }
+    
+        return response()->json(['error' => 'Invalid reset code.'], 400);
+    }
+            
 }

@@ -14,34 +14,19 @@ class ProductController extends Controller
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
     
-        $lowestPrice = Product::min('price');
-        $highestPrice = Product::max('price');
-    
         $query = Product::with('images', 'reviews.user', 'category');
     
-
-        if ($minPrice === 'min') {
-            $minPrice = $lowestPrice; 
-        } elseif ($minPrice === 'max') {
-            $minPrice = $highestPrice;
-        }
-    
-        if ($maxPrice === 'min') {
-            $maxPrice = $lowestPrice; 
-        } elseif ($maxPrice === 'max') {
-            $maxPrice = $highestPrice; 
-        }
-    
-        
-        if ($minPrice !== null && is_numeric($minPrice)) {
+        if ($minPrice !== null) {
             $query->where('price', '>=', $minPrice);
         }
     
-        if ($maxPrice !== null && is_numeric($maxPrice)) {
+        if ($maxPrice !== null) {
             $query->where('price', '<=', $maxPrice);
         }
     
         $products = $query->paginate(12);
+    
+        $priceStats = Product::selectRaw('MIN(price) as min_price, MAX(price) as max_price')->first();
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
@@ -53,6 +38,8 @@ class ProductController extends Controller
             'lastPage' => $products->lastPage(),
             'perPage' => $products->perPage(),
             'total' => $products->total(),
+            'minPrice' => $priceStats->min_price,
+            'maxPrice' => $priceStats->max_price,
         ]);
     }
         
@@ -131,74 +118,41 @@ class ProductController extends Controller
 
     public function getProductsByCategory(Request $request)
     {
-        \Log::info('Received request for products by category', ['query' => $request->query()]);
-    
         $categoryName = $request->query('category_name');
     
         if (!$categoryName) {
-            \Log::warning('Category name not provided in the request');
             return response()->json(['message' => 'Category name is required'], 400);
         }
     
-        $normalizedCategoryName = trim($categoryName);
-        \Log::info('Normalized category name', ['normalizedCategoryName' => $normalizedCategoryName]);
+        $category = Category::where('name', '=', $categoryName)->first();
     
-        $category = Category::where('name', '=', $normalizedCategoryName)->first();
-    
-        if ($category) {
-            \Log::info('Category found', ['id' => $category->id, 'name' => $category->name]);
-        } else {
-            \Log::warning('Category not found', ['searchedName' => $normalizedCategoryName]);
+        if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
     
         $productQuery = Product::where('category_id', $category->id)->with('images', 'reviews.user');
     
-        
-        $lowestPrice = Product::min('price');
-        $highestPrice = Product::max('price');
-    
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
     
-        
-        if ($minPrice === 'min') {
-            $minPrice = $lowestPrice; 
-        } elseif ($minPrice === 'max') {
-            $minPrice = $highestPrice; 
-        }
-    
-        
-        if ($maxPrice === 'min') {
-            $maxPrice = $lowestPrice; 
-        } elseif ($maxPrice === 'max') {
-            $maxPrice = $highestPrice; 
-        }
-    
-        
-        if ($minPrice !== null && is_numeric($minPrice)) {
+        if ($minPrice !== null) {
             $productQuery->where('price', '>=', $minPrice);
         }
     
-        if ($maxPrice !== null && is_numeric($maxPrice)) {
+        if ($maxPrice !== null) {
             $productQuery->where('price', '<=', $maxPrice);
         }
     
         $products = $productQuery->paginate(12);
     
-        \Log::info('Number of products found for category', ['count' => $products->total()]);
-    
-        if ($products->isEmpty()) {
-            \Log::info('No products found for the category', ['categoryId' => $category->id]);
-        } else {
-            \Log::info('Products retrieved successfully', ['productsCount' => $products->count()]);
-        }
+
+        $priceStats = Product::where('category_id', $category->id)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
         });
-    
-        \Log::info('Transformed products', ['transformedProducts' => $transformedProducts]);
     
         return response()->json([
             'products' => $transformedProducts,
@@ -206,10 +160,11 @@ class ProductController extends Controller
             'lastPage' => $products->lastPage(),
             'perPage' => $products->perPage(),
             'total' => $products->total(),
+            'minPrice' => $priceStats->min_price,
+            'maxPrice' => $priceStats->max_price,
         ]);
     }
-    
-        
+            
                 
     private function transformProduct($product)
     {
@@ -277,48 +232,6 @@ class ProductController extends Controller
     ]);
 }
 
-public function filterByPrice(Request $request)
-{
-  //  Log::info('filterByPrice called', [
-    //    'min_price' => $request->query('min_price'),
-      //  'max_price' => $request->query('max_price'),
-    //]);
-
-    $minPrice = $request->query('min_price');
-    $maxPrice = $request->query('max_price');
-
-    $query = Product::with('images', 'reviews.user', 'category');
-
-    if ($minPrice !== null) {
-        $query->where('price', '>=', $minPrice);
-       // Log::info('Min price filter applied', ['min_price' => $minPrice]);
-    }
-
-    if ($maxPrice !== null) {
-        $query->where('price', '<=', $maxPrice);
-       // Log::info('Max price filter applied', ['max_price' => $maxPrice]);
-    }
-
-    $products = $query->paginate(12);
-
-    //Log::info('Products retrieved', ['total_products' => $products->total()]);
-
-    $transformedProducts = $products->getCollection()->map(function ($product) {
-        return $this->transformProduct($product);
-    });
-
-    return response()->json([
-        'products' => $transformedProducts,
-        'currentPage' => $products->currentPage(),
-        'lastPage' => $products->lastPage(),
-        'perPage' => $products->perPage(),
-        'total' => $products->total(),
-    ]);
-}
 
 
 }
-
-
-
-

@@ -15,13 +15,14 @@ use App\Http\Controllers\WishlistController;
 
 
 
+Route::get('users', [UserController::class, 'index']);
 
 Route::middleware('custom.auth')->group(function () {
     Route::put('user/update', [UserController::class, 'update']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::get('user', [UserController::class, 'show']);
     Route::delete('user/delete', [UserController::class, 'destroy']);
-    Route::get('users', [UserController::class, 'index']);
+   // Route::get('users', action: [UserController::class, 'index']);
     Route::put('/user/{id}', [UserController::class, 'updateById']);
     Route::get('user/{id}', [UserController::class, 'showById']);
     //reviews
@@ -98,3 +99,8 @@ Route::prefix('admin')->group(function () {
         
     });
 });
+
+
+
+Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
+Route::post('/reset-password', [UserController::class, 'resetPassword']);

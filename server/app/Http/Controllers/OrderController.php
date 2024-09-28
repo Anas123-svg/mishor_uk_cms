@@ -8,6 +8,10 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Admin;
+use App\Mail\OrderNotification;
+use Illuminate\Support\Facades\Mail;
+
 
 class OrderController extends Controller
 {
@@ -31,27 +35,30 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
-
+    
         $order = Order::create($validated);
-
+    
         foreach ($validated['items'] as $item) {
-            // Create order item
+        
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity']
             ]);
+    
 
-            // Update product stock
             $product = Product::find($item['product_id']);
             $product->in_stock_quantity -= $item['quantity'];
             $product->save();
         }
-
+    
+        $adminEmails = Admin::pluck('email')->toArray();
+        Mail::to($adminEmails)->send(new OrderNotification($order));
+    
         $orderItems = OrderItem::where('order_id', $order->id)
             ->with('product')
             ->get();
-
+    
         return response()->json([
             'order_id' => $order->id,
             'order' => $order,
@@ -63,12 +70,15 @@ class OrderController extends Controller
             }),
         ], 201);
     }
+    
 
     public function index()
     {
-        $orders = Order::with('orderItems.product')->get();
+        $orders = Order::with('orderItems.product')->paginate(1);
+        
         return response()->json($orders);
     }
+    
 
     public function show($id)
     {
