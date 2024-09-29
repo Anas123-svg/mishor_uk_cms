@@ -52,16 +52,6 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-          name="description"
-          content="Mishor Compliance Services is a leading provider of Health and Safety Consulting services, offering bespoke solutions to businesses across the UK."
-        />
-        <title>Mishor</title>
-        <link rel="icon" href="/logo.png" />
-      </head>
       <body className="tracking-wide">
         <motion.div
           className="w-screen h-screen bg-primary fixed top-0 left-0 flex justify-center items-center"
