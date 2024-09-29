@@ -71,10 +71,10 @@ const ForgotPassword = () => {
     setCode(new_code);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/send-code`,
+        `${process.env.NEXT_PUBLIC_API_URL}/forgot-password`,
         {
           email: form.getValues("email"),
-          code: new_code,
+          reset_code: new_code,
         }
       );
       toast.success(response.data.message);
@@ -99,10 +99,12 @@ const ForgotPassword = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/reset-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/reset-password`,
         {
           email: values.email.toLowerCase(),
+          reset_code: receivedCode,
           password: values.password,
+          password_confirmation: values.confirmPassword,
         }
       );
       toast.success(response.data.message);

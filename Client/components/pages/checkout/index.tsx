@@ -62,28 +62,25 @@ const Checkout = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/orders`,
-        {
-          user_id: user ? user.id : null,
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          address: values.address,
-          city: values.city,
-          postalCode: values.postalCode,
-          status: "pending",
-          country: values.country,
-          items: items.map((item) => ({
-            quantity: item.quantity,
-            product_id: item.product.id,
-          })),
-          paymentMethod,
-          subTotal: getTotalPrice(),
-          delivery: getTotalPrice() > 10000 ? 0 : 300,
-          total: getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300),
-        }
-      );
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
+        user_id: user ? user.id : null,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        city: values.city,
+        postalCode: values.postalCode,
+        status: "pending",
+        country: values.country,
+        items: items.map((item) => ({
+          quantity: item.quantity,
+          product_id: item.product.id,
+        })),
+        paymentMethod,
+        subTotal: getTotalPrice(),
+        delivery: getTotalPrice() > 10000 ? 0 : 300,
+        total: getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300),
+      });
       toast.success("Order placed successfully");
       clearCart(user ? true : false, token);
       router.push("/");
@@ -283,22 +280,11 @@ const Checkout = () => {
             </div>
             <div className="flex justify-between">
               <p>Delivery</p>
-              <p>
-                {getTotalPrice() > 10000 ? (
-                  <span className="font-semibold text-green-600">Free</span>
-                ) : (
-                  "£ 300"
-                )}
-              </p>
+              <p>£ 20</p>
             </div>
             <div className="flex justify-between">
               <p>Total</p>
-              <p>
-                £{" "}
-                {(
-                  getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300)
-                ).toLocaleString()}{" "}
-              </p>
+              <p>£ {(getTotalPrice() + 20).toLocaleString()} </p>
             </div>
           </div>
         </div>

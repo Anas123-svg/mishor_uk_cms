@@ -86,32 +86,16 @@ enum OrderStatus {
 }
 
 type Order = {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  order: [
+  order_id: number;
+  status: OrderStatus;
+  total: number;
+  items: [
     {
-      quantity: number;
-      size: string;
-      color: string;
       product: Product;
+      product_id: number;
+      quantity: number;
     }
   ];
-  status: OrderStatus;
-  shippingAddress: {
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-  paymentMethod: string;
-  paymentReceipt: string;
-  subTotal: number;
-  delivery: number;
-  total: number;
-  createdAt: string;
-  updatedAt: string;
 };
 
 type FAQ = {

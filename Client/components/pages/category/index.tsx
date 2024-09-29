@@ -35,6 +35,8 @@ const Category = () => {
   const { category } = useParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [minPrice, setMinPrice] = useState(0);
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -50,30 +52,31 @@ const Category = () => {
   const getProducts = async (filter?: boolean) => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products-by-category?min_price=${
-          filters.minPrice
-        }&max_price=${filters.maxPrice}&page=${
-          filter ? 1 : page
-        }&category_name=${category}`
-      );
+      let response;
+      if (filter) {
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/products-by-category?category_name=${category}&page=1&min_price=${filters.minPrice}&max_price=${filters.maxPrice}`
+        );
+      } else {
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/products-by-category?category_name=${category}&page=${page}`
+        );
+      }
+      console.log(response.data);
       setProducts(response.data.products);
       setTotalPages(response.data.lastPage);
+      setMaxPrice(parseFloat(response.data.maxPrice));
+      setMinPrice(parseFloat(response.data.minPrice));
+      setFilters({
+        minPrice: parseFloat(response.data.minPrice),
+        maxPrice: parseFloat(response.data.maxPrice),
+      });
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
-
-  const maxPrice = useMemo(() => {
-    if (!products || products.length === 0) return 0;
-    console.log(products);
-    return products.reduce((acc, curr) => {
-      const currentMaxPrice = curr.discountedPrice || curr.price;
-      return currentMaxPrice > acc ? currentMaxPrice : acc;
-    }, 0);
-  }, [products]);
 
   return (
     <div className="pt-32 px-6 md:px-12 lg:px-24">
@@ -128,7 +131,7 @@ const Category = () => {
                 <h2 className="font-mons font-light pt-5">Price Range: </h2>
                 <div id="range">
                   <RangeSlider
-                    min={0}
+                    min={minPrice}
                     max={maxPrice}
                     step={1}
                     value={[filters.minPrice, filters.maxPrice]}
@@ -148,7 +151,7 @@ const Category = () => {
                     value={filters.minPrice}
                     onChange={(e) => {
                       const value = +e.target.value;
-                      if (value <= filters.maxPrice && value >= 0)
+                      if (value <= filters.maxPrice && value >= minPrice)
                         setFilters({ ...filters, minPrice: value });
                     }}
                     className="border border-black rounded-none w-1/2 p-2 outline-none placeholder:font-light font-light"
@@ -170,7 +173,7 @@ const Category = () => {
                   <button
                     onClick={() => {
                       setFilters({
-                        minPrice: 0,
+                        minPrice: minPrice,
                         maxPrice: maxPrice,
                       });
                     }}

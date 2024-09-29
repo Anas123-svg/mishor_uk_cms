@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import useAuthStore from "@/store/authStore";
+import { Order } from "@/types";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
@@ -45,8 +46,8 @@ const formSchemaPassword = z
   });
 
 const Profile = () => {
-  const [orders, setOrders] = useState<any>([]);
-  const { user } = useAuthStore();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const { user, token } = useAuthStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,8 +79,16 @@ const Profile = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.put(`/api/update`, values);
-      toast.success(response.data.message);
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/update`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Profile updated successfully");
     } catch (error: any) {
       toast.error(error.response.data.message);
     } finally {
@@ -109,7 +118,13 @@ const Profile = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get(`/api/order/${user?.email}`);
+      const response = await axios.get(
+        ` ${process.env.NEXT_PUBLIC_API_URL}/user/${user?.id}/orders`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(response.data.orders);
       setOrders(response.data.orders);
     } catch (error: any) {
       console.log(error);
@@ -122,7 +137,7 @@ const Profile = () => {
       </DialogTrigger>
       <DialogContent className="scrollbar scrollbar-none overflow-scroll w-full max-w-[1000px] h-full md:max-h-[520px] flex-col md:flex-row flex gap-10">
         <div className="md:w-1/2 h-full md:overflow-scroll scrollbar-none">
-          <h1 className="text-2xl font-bold mb-3">Your Profile</h1>
+          <h1 className="text-2xl font-mons mb-3">Your Profile</h1>
           <Tabs defaultValue="account">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="account">Account</TabsTrigger>
@@ -189,20 +204,16 @@ const Profile = () => {
                   {edit ? (
                     <button
                       type="submit"
-                      className="text-base w-full bg-transparent hover:bg-transparent py-2 border border-black text-white dark:border-white relative group transition duration-200"
+                      className="text-base w-full bg-primary hover:bg-primary-hover py-2 text-white dark:border-white transition duration-200"
                     >
-                      <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-95 group-hover:scale-y-75 transition-all duration-200" />
-                      <span className="relative">
-                        {isSubmitting ? "Saving..." : "Save Changes"}
-                      </span>
+                      {isSubmitting ? "Saving..." : "Save Changes"}
                     </button>
                   ) : (
                     <div
                       onClick={() => setEdit(true)}
-                      className="w-full bg-transparent hover:bg-transparent py-2 text-center border border-black  dark:border-white relative group transition duration-200"
+                      className="text-white w-full bg-primary hover:bg-primary-hover py-2 text-center  dark:border-white transition duration-200"
                     >
-                      <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-95 group-hover:scale-y-75 transition-all duration-200" />
-                      <span className="relative text-white">Edit</span>
+                      Edit
                     </div>
                   )}
                 </form>
@@ -255,12 +266,9 @@ const Profile = () => {
                   />
                   <button
                     type="submit"
-                    className="text-base w-full bg-transparent hover:bg-transparent py-2 border border-black text-white dark:border-white relative group transition duration-200"
+                    className="text-base w-full bg-primary hover:bg-primary-hover py-2 text-white dark:border-white transition duration-200"
                   >
-                    <div className="absolute bottom-0 right-0 bg-primary h-full w-full -z-10 group-hover:scale-x-95 group-hover:scale-y-75 transition-all duration-200" />
-                    <span className="relative">
-                      {isSubmittingPassword ? "Saving..." : "Save Changes"}
-                    </span>
+                    {isSubmittingPassword ? "Saving..." : "Save Changes"}
                   </button>
                 </form>
               </Form>
@@ -268,33 +276,41 @@ const Profile = () => {
           </Tabs>
         </div>
         <div className="md:w-1/2 h-full">
-          <h1 className="text-2xl font-bold mb-3">Previous Orders</h1>
+          <h1 className="text-2xl font-mons mb-3">Previous Orders</h1>
           <div className="space-y-3 text-xs md:overflow-scroll md:h-[90%] scrollbar-none">
-            {orders.filter((order: any) => order.status == "pending").length >
-              0 && <h3 className="font-bold">Ongoing:</h3>}
+            {orders.filter((order) => order.status == "pending").length > 0 && (
+              <h3 className="font-bold">Pending:</h3>
+            )}
             {orders
-              .filter((order: any) => order.status == "pending")
-              .map((order: any) => (
-                <div key={order._id} className="border p-3">
-                  <div className="flex justify-between">
+              .filter((order) => order.status == "pending")
+              .map((order) => (
+                <div key={order.order_id} className="border p-3 rounded-md">
+                  {/* <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </h2>
-                  </div>
+                  </div> */}
                   <div>
                     <h2 className="font-bold">Items:</h2>
-                    {order.orderItems.map((item: any) => (
-                      <div key={item._id} className="flex justify-between">
-                        <p>
-                          {item.product?.name} ( {item.size.toUpperCase()} |{" "}
-                          {item.color[0].toUpperCase() + item.color.slice(1)} )
-                        </p>
+                    {order.items.map((item) => (
+                      <div
+                        key={item.product_id}
+                        className="flex justify-between"
+                      >
+                        <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {item.product.price.toLocaleString()} = £{" "}
+                          {(item.product.discountedPrice
+                            ? item.product.discountedPrice
+                            : item.product.price
+                          ).toLocaleString()}{" "}
+                          = £{" "}
                           {(
-                            item.quantity * item.product.price
+                            item.quantity *
+                            (item.product.discountedPrice
+                              ? item.product.discountedPrice
+                              : item.product.price)
                           ).toLocaleString()}
                         </p>
                       </div>
@@ -303,7 +319,7 @@ const Profile = () => {
                   <div className="flex justify-between">
                     <h2 className="font-bold">Total</h2>
                     <h2 className="font-bold">
-                      £ {order.totalPrice.toLocaleString()}
+                      £ {order.total.toLocaleString()}
                     </h2>
                   </div>
                   <div className="flex justify-between">
@@ -311,6 +327,8 @@ const Profile = () => {
                     <h2 className="font-bold">
                       {order.status === "pending" ? (
                         <span className="text-yellow-600">Pending</span>
+                      ) : order.status === "processing" ? (
+                        <span className="text-blue-600">Processing</span>
                       ) : order.status === "completed" ? (
                         <span className="text-green-600">Completed</span>
                       ) : (
@@ -320,29 +338,40 @@ const Profile = () => {
                   </div>
                 </div>
               ))}
-            <hr />
-            {orders.filter((order: any) => order.status != "pending").length >
-              0 && <h3 className="font-bold">Completed:</h3>}
+            {orders.filter((order) => order.status == "processing").length >
+              0 && <hr />}
+            {orders.filter((order) => order.status == "processing").length >
+              0 && <h3 className="font-bold">Processing:</h3>}
             {orders
-              .filter((order: any) => order.status != "pending")
-              .map((order: any) => (
-                <div key={order._id} className="border p-3 rounded-md">
-                  <div className="flex justify-between">
+              .filter((order) => order.status == "processing")
+              .map((order) => (
+                <div key={order.order_id} className="border p-3 rounded-md">
+                  {/* <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </h2>
-                  </div>
+                  </div> */}
                   <div>
                     <h2 className="font-bold">Items:</h2>
-                    {order.orderItems.map((item: any) => (
-                      <div key={item._id} className="flex justify-between">
-                        <p>{item.product.name}</p>
+                    {order.items.map((item) => (
+                      <div
+                        key={item.product_id}
+                        className="flex justify-between"
+                      >
+                        <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {item.product.price.toLocaleString()} = £{" "}
+                          {(item.product.discountedPrice
+                            ? item.product.discountedPrice
+                            : item.product.price
+                          ).toLocaleString()}{" "}
+                          = £{" "}
                           {(
-                            item.quantity * item.product.price
+                            item.quantity *
+                            (item.product.discountedPrice
+                              ? item.product.discountedPrice
+                              : item.product.price)
                           ).toLocaleString()}
                         </p>
                       </div>
@@ -351,7 +380,7 @@ const Profile = () => {
                   <div className="flex justify-between">
                     <h2 className="font-bold">Total</h2>
                     <h2 className="font-bold">
-                      £ {order.totalPrice.toLocaleString()}
+                      £ {order.total.toLocaleString()}
                     </h2>
                   </div>
                   <div className="flex justify-between">
@@ -359,6 +388,130 @@ const Profile = () => {
                     <h2 className="font-bold">
                       {order.status === "pending" ? (
                         <span className="text-yellow-600">Pending</span>
+                      ) : order.status === "processing" ? (
+                        <span className="text-blue-600">Processing</span>
+                      ) : order.status === "completed" ? (
+                        <span className="text-green-600">Completed</span>
+                      ) : (
+                        <span className="text-red-600">Cancelled</span>
+                      )}
+                    </h2>
+                  </div>
+                </div>
+              ))}
+            {orders.filter((order) => order.status == "completed").length >
+              0 && <hr />}
+            {orders.filter((order) => order.status == "completed").length >
+              0 && <h3 className="font-bold">Completed:</h3>}
+            {orders
+              .filter((order) => order.status == "completed")
+              .map((order) => (
+                <div key={order.order_id} className="border p-3 rounded-md">
+                  {/* <div className="flex justify-between">
+                    <h2 className="font-bold">Order Date</h2>
+                    <h2 className="font-bold">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </h2>
+                  </div> */}
+                  <div>
+                    <h2 className="font-bold">Items:</h2>
+                    {order.items.map((item) => (
+                      <div
+                        key={item.product_id}
+                        className="flex justify-between"
+                      >
+                        <p>{item.product.title}</p>
+                        <p>
+                          {item.quantity} x{" "}
+                          {(item.product.discountedPrice
+                            ? item.product.discountedPrice
+                            : item.product.price
+                          ).toLocaleString()}{" "}
+                          = £{" "}
+                          {(
+                            item.quantity *
+                            (item.product.discountedPrice
+                              ? item.product.discountedPrice
+                              : item.product.price)
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="font-bold">Total</h2>
+                    <h2 className="font-bold">
+                      £ {order.total.toLocaleString()}
+                    </h2>
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="font-bold">Status</h2>
+                    <h2 className="font-bold">
+                      {order.status === "pending" ? (
+                        <span className="text-yellow-600">Pending</span>
+                      ) : order.status === "processing" ? (
+                        <span className="text-blue-600">Processing</span>
+                      ) : order.status === "completed" ? (
+                        <span className="text-green-600">Completed</span>
+                      ) : (
+                        <span className="text-red-600">Cancelled</span>
+                      )}
+                    </h2>
+                  </div>
+                </div>
+              ))}
+            {orders.filter((order) => order.status == "cancelled").length >
+              0 && <hr />}
+            {orders.filter((order) => order.status == "cancelled").length >
+              0 && <h3 className="font-bold">Cancelled:</h3>}
+            {orders
+              .filter((order) => order.status == "cancelled")
+              .map((order) => (
+                <div key={order.order_id} className="border p-3 rounded-md">
+                  {/* <div className="flex justify-between">
+                    <h2 className="font-bold">Order Date</h2>
+                    <h2 className="font-bold">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </h2>
+                  </div> */}
+                  <div>
+                    <h2 className="font-bold">Items:</h2>
+                    {order.items.map((item) => (
+                      <div
+                        key={item.product_id}
+                        className="flex justify-between"
+                      >
+                        <p>{item.product.title}</p>
+                        <p>
+                          {item.quantity} x{" "}
+                          {(item.product.discountedPrice
+                            ? item.product.discountedPrice
+                            : item.product.price
+                          ).toLocaleString()}{" "}
+                          = £{" "}
+                          {(
+                            item.quantity *
+                            (item.product.discountedPrice
+                              ? item.product.discountedPrice
+                              : item.product.price)
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="font-bold">Total</h2>
+                    <h2 className="font-bold">
+                      £ {order.total.toLocaleString()}
+                    </h2>
+                  </div>
+                  <div className="flex justify-between">
+                    <h2 className="font-bold">Status</h2>
+                    <h2 className="font-bold">
+                      {order.status === "pending" ? (
+                        <span className="text-yellow-600">Pending</span>
+                      ) : order.status === "processing" ? (
+                        <span className="text-blue-600">Processing</span>
                       ) : order.status === "completed" ? (
                         <span className="text-green-600">Completed</span>
                       ) : (

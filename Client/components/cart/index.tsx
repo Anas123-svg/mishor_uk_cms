@@ -49,22 +49,11 @@ const CartComp = () => {
                   </div>
                   <div className="flex justify-between">
                     <p>Delivery</p>
-                    <p>
-                      {getTotalPrice() > 1000 ? (
-                        <span className="text-tertiary">Free</span>
-                      ) : (
-                        "£ 20"
-                      )}
-                    </p>
+                    <p>£ 20"</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Total</p>
-                    <p>
-                      £{" "}
-                      {(
-                        getTotalPrice() + (getTotalPrice() > 1000 ? 0 : 20)
-                      ).toLocaleString()}
-                    </p>
+                    <p>£ {(getTotalPrice() + 20).toLocaleString()}</p>
                   </div>
                   <Link href="/checkout" className="block mt-5">
                     <DropdownMenuItem className="font-mons cursor-pointer flex justify-center items-center w-full py-2 px-3 bg-primary hover:bg-primary-hover focus:bg-primary-hover focus:text-white text-white transition duration-200">
