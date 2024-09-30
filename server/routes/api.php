@@ -22,6 +22,7 @@ Route::middleware('custom.auth')->group(function () {
     Route::post('logout', [UserController::class, 'logout']);
     Route::get('user', [UserController::class, 'show']);
     Route::delete('user/delete', [UserController::class, 'destroy']);
+    ROute::post('/update-password', [UserController::class, 'updatePassword']);
    // Route::get('users', action: [UserController::class, 'index']);
     Route::put('/user/{id}', [UserController::class, 'updateById']);
     Route::get('user/{id}', [UserController::class, 'showById']);

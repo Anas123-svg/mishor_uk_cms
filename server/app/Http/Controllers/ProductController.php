@@ -17,16 +17,34 @@ class ProductController extends Controller
         $query = Product::with('images', 'reviews.user', 'category');
     
         if ($minPrice !== null) {
-            $query->where('price', '>=', $minPrice);
+            $query->where(function ($q) use ($minPrice) {
+                $q->where('discounted_price', '>=', $minPrice)
+                    ->orWhere(function ($q) use ($minPrice) {
+                        $q->whereNull('discounted_price')
+                          ->where('price', '>=', $minPrice);
+                    });
+            });
         }
     
         if ($maxPrice !== null) {
-            $query->where('price', '<=', $maxPrice);
+            $query->where(function ($q) use ($maxPrice) {
+                $q->where('discounted_price', '<=', $maxPrice)
+                    ->orWhere(function ($q) use ($maxPrice) {
+                        $q->whereNull('discounted_price')
+                          ->where('price', '<=', $maxPrice);
+                    });
+            });
         }
     
-        $products = $query->paginate(12);
+        $priceRangeQuery = clone $query;
     
-        $priceStats = Product::selectRaw('MIN(price) as min_price, MAX(price) as max_price')->first();
+        $priceStats = $priceRangeQuery->selectRaw('
+            MIN(COALESCE(discounted_price, price)) as min_price,
+            MAX(COALESCE(discounted_price, price)) as max_price
+        ')->first();
+    
+    
+        $products = $query->paginate(12);
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
@@ -38,11 +56,11 @@ class ProductController extends Controller
             'lastPage' => $products->lastPage(),
             'perPage' => $products->perPage(),
             'total' => $products->total(),
-            'minPrice' => $priceStats->min_price,
-            'maxPrice' => $priceStats->max_price,
+            'minPrice' => $minPrice !== null ? $minPrice : $priceStats->min_price,
+            'maxPrice' => $maxPrice !== null ? $maxPrice : $priceStats->max_price,
         ]);
     }
-        
+                
     
     public function show($id)
     {
@@ -130,25 +148,42 @@ class ProductController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
     
-        $productQuery = Product::where('category_id', $category->id)->with('images', 'reviews.user');
+      
+        $productQuery = Product::where('category_id', $category->id)
+            ->with('images', 'reviews.user');
     
+
         $minPrice = $request->query('min_price');
         $maxPrice = $request->query('max_price');
     
         if ($minPrice !== null) {
-            $productQuery->where('price', '>=', $minPrice);
+            $productQuery->where(function ($q) use ($minPrice) {
+                $q->where('discounted_price', '>=', $minPrice)
+                    ->orWhere(function ($q) use ($minPrice) {
+                        $q->whereNull('discounted_price')
+                          ->where('price', '>=', $minPrice);
+                    });
+            });
         }
     
         if ($maxPrice !== null) {
-            $productQuery->where('price', '<=', $maxPrice);
+            $productQuery->where(function ($q) use ($maxPrice) {
+                $q->where('discounted_price', '<=', $maxPrice)
+                    ->orWhere(function ($q) use ($maxPrice) {
+                        $q->whereNull('discounted_price')
+                          ->where('price', '<=', $maxPrice);
+                    });
+            });
         }
     
         $products = $productQuery->paginate(12);
     
-
-        $priceStats = Product::where('category_id', $category->id)
-            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
-            ->first();
+        $priceRangeQuery = Product::where('category_id', $category->id);
+        
+        $priceStats = $priceRangeQuery->selectRaw('
+            MIN(COALESCE(discounted_price, price)) as min_price,
+            MAX(COALESCE(discounted_price, price)) as max_price
+        ')->first();
     
         $transformedProducts = $products->getCollection()->map(function ($product) {
             return $this->transformProduct($product);
@@ -160,11 +195,11 @@ class ProductController extends Controller
             'lastPage' => $products->lastPage(),
             'perPage' => $products->perPage(),
             'total' => $products->total(),
-            'minPrice' => $priceStats->min_price,
-            'maxPrice' => $priceStats->max_price,
+            'minPrice' => $minPrice !== null ? $minPrice : $priceStats->min_price,
+            'maxPrice' => $maxPrice !== null ? $maxPrice : $priceStats->max_price,
         ]);
     }
-            
+                    
                 
     private function transformProduct($product)
     {

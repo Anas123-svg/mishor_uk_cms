@@ -74,7 +74,7 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::with('orderItems.product')->paginate(1);
+        $orders = Order::with('orderItems.product')->paginate(12);
         
         return response()->json($orders);
     }
@@ -192,6 +192,8 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'status' => $order->status,
                     'total' => $order->total,
+                    'created_at' => $order->created_at,
+                    'updated_at' => $order->updated_at,    
                     'items' => $order->orderItems->map(function ($item) {
                         return [
                             'product_id' => $item->product_id,

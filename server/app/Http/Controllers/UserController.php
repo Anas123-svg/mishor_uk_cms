@@ -186,5 +186,31 @@ class UserController extends BaseController
     
         return response()->json(['error' => 'Invalid reset code.'], 400);
     }
+    public function updatePassword(Request $request)
+{
+    $request->validate([
+        'previousPassword' => 'required|string',
+        'newPassword' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = $request->user();
+
+    if (!Hash::check($request->previousPassword, $user->password)) {
+        return response()->json(['error' => 'Previous password does not match.'], 400);
+    }
+
+    $user->password = Hash::make($request->newPassword);
+    $user->save();
+
+    //$user->tokens()->delete();
+    
+    //$newToken = $user->createToken('authToken')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Password updated successfully.',
+    //    'token' => $newToken,
+    ], 200);
+}
+
             
 }
