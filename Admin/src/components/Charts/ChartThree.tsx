@@ -8,7 +8,7 @@ const options: ApexOptions = {
     type: "donut",
   },
   colors: ["#3C50E0", "#6577F3", "#8FD0EF"],
-  labels: ["Products", "Blogs", "Users"],
+  labels: ["Products", "Orders", "Users"],
   legend: {
     show: false,
     position: "bottom",
@@ -46,13 +46,13 @@ const options: ApexOptions = {
 
 const ChartThree: React.FC<{
   products: number;
-  blogs: number;
+  orders: number;
   users: number;
-}> = ({ products, blogs, users }) => {
+}> = ({ products, orders, users }) => {
   const series = [
-    Number(((products / (products + blogs + users)) * 100).toFixed(2)),
-    Number(((blogs / (products + blogs + users)) * 100).toFixed(2)),
-    Number(((users / (products + blogs + users)) * 100).toFixed(2)),
+    Number(((products / (products + orders + users)) * 100).toFixed(2)),
+    Number(((orders / (products + orders + users)) * 100).toFixed(2)),
+    Number(((users / (products + orders + users)) * 100).toFixed(2)),
   ];
   const legendData = [
     {
@@ -61,8 +61,8 @@ const ChartThree: React.FC<{
       color: "#3C50E0",
     },
     {
-      label: "Blogs",
-      value: blogs,
+      label: "Orders",
+      value: orders,
       color: "#6577F3",
     },
     {
@@ -78,7 +78,7 @@ const ChartThree: React.FC<{
         Site Statistics
       </h5>
       <p className="text-gray-500 dark:text-gray-400 text-sm">
-        Breakdown of the site statistics
+        Breakdown of the site statistics (%)
       </p>
       <div>
         <div id="chartThree" className="mx-auto flex justify-center">

@@ -5,49 +5,8 @@ import ChartOne from "../Charts/ChartOne";
 import CardDataStats from "../CardDataStats";
 import axios from "axios";
 import { BiDollar } from "react-icons/bi";
-
-const dummyOrders = [
-  {
-    created_at: "2023-01-12T00:00:00.000Z",
-    total_amount: 150,
-  },
-  {
-    created_at: "2023-02-05T00:00:00.000Z",
-    total_amount: 340,
-  },
-  {
-    created_at: "2023-03-18T00:00:00.000Z",
-    total_amount: 250,
-  },
-  {
-    created_at: "2023-04-23T00:00:00.000Z",
-    total_amount: 450,
-  },
-  {
-    created_at: "2023-05-09T00:00:00.000Z",
-    total_amount: 620,
-  },
-  {
-    created_at: "2023-06-17T00:00:00.000Z",
-    total_amount: 530,
-  },
-  {
-    created_at: "2023-07-14T00:00:00.000Z",
-    total_amount: 410,
-  },
-  {
-    created_at: "2023-08-22T00:00:00.000Z",
-    total_amount: 390,
-  },
-  {
-    created_at: "2023-09-06T00:00:00.000Z",
-    total_amount: 725,
-  },
-  {
-    created_at: "2023-10-11T00:00:00.000Z",
-    total_amount: 300,
-  },
-];
+import { Order } from "@/types";
+import useAuthStore from "@/store/authStore";
 
 const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
   ssr: false,
@@ -55,17 +14,36 @@ const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
 
 const ECommerce: React.FC = () => {
   const [products, setProducts] = useState(0);
-  const [orders, setOrders] = useState<any>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [totalSales, setTotalSales] = useState(0);
   const [users, setUsers] = useState(0);
-  const [blogs, setBlogs] = useState(0);
-  const [events, setEvents] = useState(0);
+  const { token } = useAuthStore();
+
+  const fetchTotalSales = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/earnings`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setTotalSales(response.data.total_earnings);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchProductsCount = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/count`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/products/count`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-      setProducts(response.data.count);
+      setProducts(response.data.total_products);
     } catch (error) {
       console.error(error);
     }
@@ -74,30 +52,14 @@ const ECommerce: React.FC = () => {
   const fetchUsersCount = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/count`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/count`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       setUsers(response.data.total_users);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const fetchBlogsCount = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/blog/count`,
-      );
-      setBlogs(response.data.count);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchEventsCount = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/count`,
-      );
-      setEvents(response.data.count);
     } catch (error) {
       console.error(error);
     }
@@ -106,9 +68,14 @@ const ECommerce: React.FC = () => {
   const fetchOrders = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/orders-stats`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-      setOrders(response.data.orders);
+      setOrders(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -116,35 +83,18 @@ const ECommerce: React.FC = () => {
 
   useEffect(() => {
     fetchProductsCount();
+    fetchTotalSales();
     fetchUsersCount();
-    fetchBlogsCount();
-    fetchEventsCount();
     fetchOrders();
   }, []);
 
   return (
     <div className="min-h-screen">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats
-          title="Total Sales"
-          // total={`$${
-          //   orders?.length &&
-          //   orders
-          //     .reduce(
-          //       (acc: any, order: any) => acc + parseFloat(order.total_amount),
-          //       0,
-          //     )
-          //     .toFixed(2)
-          // }`}
-          total="$1569"
-        >
+        <CardDataStats title="Total Sales" total={`£ ${totalSales}`}>
           <BiDollar className="fill-primary dark:fill-white" size={20} />
         </CardDataStats>
-        <CardDataStats
-          title="Total Orders"
-          // total={orders.length.toString()}
-          total="12"
-        >
+        <CardDataStats title="Total Orders" total={orders.length.toString()}>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -186,11 +136,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats
-          title="Total Users"
-          // total={users.toString()}
-          total="23"
-        >
+        <CardDataStats title="Total Users" total={users.toString()}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -216,8 +162,10 @@ const ECommerce: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne orders={dummyOrders} />
-        <ChartThree products={products} blogs={10} users={23} />
+        <ChartOne
+          orders={orders.filter((order) => order.status === "completed")}
+        />
+        <ChartThree products={products} orders={orders.length} users={users} />
       </div>
     </div>
   );

@@ -62,7 +62,6 @@ const Category = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/products-by-category?category_name=${category}&page=${page}`
         );
       }
-      console.log(response.data);
       setProducts(response.data.products);
       setTotalPages(response.data.lastPage);
       setMaxPrice(parseFloat(response.data.maxPrice));

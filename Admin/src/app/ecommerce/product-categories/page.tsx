@@ -10,6 +10,7 @@ import axios from "axios";
 import Loader from "@/components/common/Loader";
 import Delete from "@/components/Delete";
 import { Category } from "@/types";
+import useAuthStore from "@/store/authStore";
 
 const customStyles = {
   content: {
@@ -39,6 +40,7 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState<number | null>(null);
+  const { user } = useAuthStore();
 
   const initialFormData = { name: "" };
   const [formData, setFormData] = useState(initialFormData);
@@ -107,6 +109,18 @@ const Categories = () => {
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  if (!user?.permissions.Products) {
+    return (
+      <DefaultLayout>
+        <div className="flex h-[84.4vh] items-center justify-center">
+          <h1 className="text-2xl font-semibold text-black dark:text-white">
+            You do not have permission to view this page
+          </h1>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>

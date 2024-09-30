@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import dayjs from "dayjs";
+import { Order } from "@/types";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -49,7 +50,6 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: 2,
-
     curve: "straight",
   },
   grid: {
@@ -104,24 +104,24 @@ const options: ApexOptions = {
   yaxis: {
     min: 0,
     labels: {
-      formatter: (value) => `$${value.toFixed(2)}`,
+      formatter: (value) => `£ ${value.toFixed(2)}`,
     },
   },
   tooltip: {
     y: {
-      formatter: (value) => `$${value.toFixed(2)}`,
+      formatter: (value) => `£ ${value.toFixed(2)}`,
     },
   },
 };
 
-const getMonthlyOrders = (orders: any[], year: number) => {
+const getMonthlyOrders = (orders: Order[], year: number) => {
   const monthlyOrders = Array(12).fill(0);
 
   orders.forEach((order) => {
     const orderYear = dayjs(order?.created_at).year();
     if (orderYear === year) {
       const monthIndex = dayjs(order.created_at).month(); // January is 0, December is 11
-      monthlyOrders[monthIndex] += parseFloat(order.total_amount); // Convert total_amount to a number
+      monthlyOrders[monthIndex] += parseFloat(order.total.toString()); // Convert total_amount to a number
     }
   });
 
@@ -129,7 +129,6 @@ const getMonthlyOrders = (orders: any[], year: number) => {
 };
 
 const ChartOne: React.FC<{ orders: any[] }> = ({ orders }) => {
-  console.log(orders);
   const currentYear = dayjs().year();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 

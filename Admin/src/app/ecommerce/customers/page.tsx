@@ -6,20 +6,34 @@ import { User } from "@/types";
 import axios from "axios";
 import Delete from "@/components/Delete";
 import useAuthStore from "@/store/authStore";
+import ReactPaginate from "react-paginate";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [customerData, setCustomerData] = useState<User[]>([]);
-  const { token } = useAuthStore();
+  const { user, token } = useAuthStore();
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useRouter();
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get("page") ?? 1;
+
+  const handlePageClick = (data: any) => {
+    navigate.push(`?page=${data.selected + 1}`);
+  };
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/users?page=${pageParam}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       setCustomerData(res.data.data);
+      setTotalPages(res.data.last_page);
     } catch (error) {
       console.error("Failed to fetch customers:", error);
     }
@@ -27,13 +41,25 @@ const Customers = () => {
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, [pageParam]);
 
   const filteredCustomers = customerData.filter(
     (customer) =>
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  if (!user?.permissions.Customers) {
+    return (
+      <DefaultLayout>
+        <div className="flex h-[84.4vh] items-center justify-center">
+          <h1 className="text-2xl font-semibold text-black dark:text-white">
+            You do not have permission to view this page
+          </h1>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
@@ -153,6 +179,24 @@ const Customers = () => {
             )}
           </div>
         </div>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={3}
+          pageCount={totalPages}
+          previousLabel="< previous"
+          containerClassName="flex justify-center space-x-2 py-5 mt-5"
+          pageClassName="page-item"
+          pageLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          previousClassName="page-item"
+          previousLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          nextClassName="page-item"
+          nextLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          breakClassName="page-item"
+          breakLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          activeClassName="bg-primary text-white"
+        />
       </div>
     </DefaultLayout>
   );

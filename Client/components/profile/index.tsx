@@ -137,7 +137,6 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response.data.orders);
       setOrders(response.data.orders);
     } catch (error: any) {
       console.log(error);

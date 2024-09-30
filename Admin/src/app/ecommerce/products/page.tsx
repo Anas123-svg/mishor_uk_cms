@@ -11,6 +11,9 @@ import axios from "axios";
 import { Product, Category } from "@/types";
 import Loader from "@/components/common/Loader";
 import Delete from "@/components/Delete";
+import ReactPaginate from "react-paginate";
+import { useRouter, useSearchParams } from "next/navigation";
+import useAuthStore from "@/store/authStore";
 
 const customStyles = {
   content: {
@@ -39,18 +42,24 @@ const Products = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useRouter();
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get("page") ?? 1;
   const [id, setId] = useState(0);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     getProductsAndCategories();
-  }, []);
+  }, [pageParam]);
 
   const getProductsAndCategories = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products?page=1`,
+        `${process.env.NEXT_PUBLIC_API_URL}/products?page=${pageParam}`,
       );
       setProducts(res.data.products);
+      setTotalPages(res.data.lastPage);
       const res2 = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/categories`,
       );
@@ -65,7 +74,7 @@ const Products = () => {
   const getProducts = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products?page=1`,
+        `${process.env.NEXT_PUBLIC_API_URL}/products?page=${pageParam}`,
       );
       setProducts(res.data.products);
     } catch (error) {
@@ -114,7 +123,6 @@ const Products = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!isFormValid()) {
-      console.log(formData);
       toast.error("Please fill in all fields");
       return;
     }
@@ -166,6 +174,22 @@ const Products = () => {
       }
     }
   };
+
+  const handlePageClick = (data: any) => {
+    navigate.push(`?page=${data.selected + 1}`);
+  };
+
+  if (!user?.permissions.Products) {
+    return (
+      <DefaultLayout>
+        <div className="flex h-[84.4vh] items-center justify-center">
+          <h1 className="text-2xl font-semibold text-black dark:text-white">
+            You do not have permission to view this page
+          </h1>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
@@ -505,6 +529,24 @@ const Products = () => {
             </div>
           )}
         </div>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={3}
+          pageCount={totalPages}
+          previousLabel="< previous"
+          containerClassName="flex justify-center space-x-2 py-5 mt-5"
+          pageClassName="page-item"
+          pageLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          previousClassName="page-item"
+          previousLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          nextClassName="page-item"
+          nextLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          breakClassName="page-item"
+          breakLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          activeClassName="bg-primary text-white"
+        />
       </div>
     </DefaultLayout>
   );

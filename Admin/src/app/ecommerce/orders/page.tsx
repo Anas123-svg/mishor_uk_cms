@@ -11,6 +11,8 @@ import Modal from "react-modal";
 import Loader from "@/components/common/Loader";
 import Delete from "@/components/Delete";
 import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
+import ReactPaginate from "react-paginate";
 
 const customStyles = {
   content: {
@@ -38,13 +40,17 @@ const OrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search input
-  const { token } = useAuthStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useRouter();
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get("page") ?? 1;
+  const { user, token } = useAuthStore();
 
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/orders?page=1`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders?page=${pageParam}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,6 +58,7 @@ const OrdersPage = () => {
         },
       );
       setOrders(res.data.data);
+      setTotalPages(res.data.last_page);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     } finally {
@@ -61,7 +68,7 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [pageParam]);
 
   // Handle modal opening to view order details
   const openModal = (order: Order) => {
@@ -95,12 +102,28 @@ const OrdersPage = () => {
     }
   };
 
+  const handlePageClick = (data: any) => {
+    navigate.push(`?page=${data.selected + 1}`);
+  };
+
   // Filtered orders based on search input
   const filteredOrders = orders.filter(
     (order) =>
       order.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  if (!user?.permissions.Orders) {
+    return (
+      <DefaultLayout>
+        <div className="flex h-[84.4vh] items-center justify-center">
+          <h1 className="text-2xl font-semibold text-black dark:text-white">
+            You do not have permission to view this page
+          </h1>
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
@@ -201,6 +224,25 @@ const OrdersPage = () => {
             </div>
           )}
         </div>
+
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={3}
+          pageCount={totalPages}
+          previousLabel="< previous"
+          containerClassName="flex justify-center space-x-2 py-5 mt-5"
+          pageClassName="page-item"
+          pageLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          previousClassName="page-item"
+          previousLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          nextClassName="page-item"
+          nextLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          breakClassName="page-item"
+          breakLinkClassName="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          activeClassName="bg-primary text-white"
+        />
 
         {selectedOrder && (
           <Modal
