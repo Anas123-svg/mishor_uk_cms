@@ -63,13 +63,26 @@ enum OrderStatus {
   CANCELLED = "cancelled",
 }
 
+type Product2 = {
+  id: number;
+  title: string;
+  price: number;
+  discounted_price: number;
+  category_id: string;
+  in_stock: boolean;
+  inStock_quantity: number;
+  description: string;
+  created_at: string;
+  updated_at: string;
+};
+
 type Order = {
   order_id: number;
   status: OrderStatus;
   total: number;
   items: [
     {
-      product: Product;
+      product: Product2;
       product_id: number;
       quantity: number;
     }

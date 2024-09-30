@@ -137,6 +137,7 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(response.data.orders);
       setOrders(response.data.orders);
     } catch (error: any) {
       console.log(error);
@@ -294,6 +295,7 @@ const Profile = () => {
               <h3 className="font-bold">Pending:</h3>
             )}
             {orders
+              .reverse()
               .filter((order) => order.status == "pending")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
@@ -313,15 +315,15 @@ const Profile = () => {
                         <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {(item.product.discountedPrice
-                            ? item.product.discountedPrice
+                          {(item.product.discounted_price > 0
+                            ? item.product.discounted_price
                             : item.product.price
                           ).toLocaleString()}{" "}
                           = £{" "}
                           {(
                             item.quantity *
-                            (item.product.discountedPrice
-                              ? item.product.discountedPrice
+                            (item.product.discounted_price > 0
+                              ? item.product.discounted_price
                               : item.product.price)
                           ).toLocaleString()}
                         </p>
@@ -355,6 +357,7 @@ const Profile = () => {
             {orders.filter((order) => order.status == "processing").length >
               0 && <h3 className="font-bold">Processing:</h3>}
             {orders
+              .reverse()
               .filter((order) => order.status == "processing")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
@@ -374,15 +377,15 @@ const Profile = () => {
                         <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {(item.product.discountedPrice
-                            ? item.product.discountedPrice
+                          {(item.product.discounted_price > 0
+                            ? item.product.discounted_price
                             : item.product.price
                           ).toLocaleString()}{" "}
                           = £{" "}
                           {(
                             item.quantity *
-                            (item.product.discountedPrice
-                              ? item.product.discountedPrice
+                            (item.product.discounted_price > 0
+                              ? item.product.discounted_price
                               : item.product.price)
                           ).toLocaleString()}
                         </p>
@@ -416,6 +419,7 @@ const Profile = () => {
             {orders.filter((order) => order.status == "completed").length >
               0 && <h3 className="font-bold">Completed:</h3>}
             {orders
+              .reverse()
               .filter((order) => order.status == "completed")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
@@ -435,15 +439,15 @@ const Profile = () => {
                         <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {(item.product.discountedPrice
-                            ? item.product.discountedPrice
+                          {(item.product.discounted_price > 0
+                            ? item.product.discounted_price
                             : item.product.price
                           ).toLocaleString()}{" "}
                           = £{" "}
                           {(
                             item.quantity *
-                            (item.product.discountedPrice
-                              ? item.product.discountedPrice
+                            (item.product.discounted_price > 0
+                              ? item.product.discounted_price
                               : item.product.price)
                           ).toLocaleString()}
                         </p>
@@ -477,6 +481,7 @@ const Profile = () => {
             {orders.filter((order) => order.status == "cancelled").length >
               0 && <h3 className="font-bold">Cancelled:</h3>}
             {orders
+              .reverse()
               .filter((order) => order.status == "cancelled")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
@@ -496,15 +501,15 @@ const Profile = () => {
                         <p>{item.product.title}</p>
                         <p>
                           {item.quantity} x{" "}
-                          {(item.product.discountedPrice
-                            ? item.product.discountedPrice
+                          {(item.product.discounted_price > 0
+                            ? item.product.discounted_price
                             : item.product.price
                           ).toLocaleString()}{" "}
                           = £{" "}
                           {(
                             item.quantity *
-                            (item.product.discountedPrice
-                              ? item.product.discountedPrice
+                            (item.product.discounted_price > 0
+                              ? item.product.discounted_price
                               : item.product.price)
                           ).toLocaleString()}
                         </p>
