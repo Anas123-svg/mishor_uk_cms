@@ -44,14 +44,14 @@ const OrdersPage = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders?page=1`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
-      setOrders(res.data);
+      setOrders(res.data.data);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     } finally {
@@ -79,7 +79,7 @@ const OrdersPage = () => {
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {
       await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`,
         { status: newStatus },
         {
           headers: {
@@ -98,7 +98,6 @@ const OrdersPage = () => {
   // Filtered orders based on search input
   const filteredOrders = orders.filter(
     (order) =>
-      order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -154,7 +153,7 @@ const OrdersPage = () => {
               >
                 <div className="col-span-2">
                   <p className="text-sm text-black dark:text-white">
-                    {order.order_number}
+                    {order.id}
                   </p>
                 </div>
                 <div className="col-span-3">
@@ -164,7 +163,7 @@ const OrdersPage = () => {
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm text-black dark:text-white">
-                    ${order.total_amount}
+                    ${order.total}
                   </p>
                 </div>
                 <div className="col-span-1">
@@ -189,7 +188,7 @@ const OrdersPage = () => {
                     <FaEye size={18} />
                   </button>
                   <Delete
-                    api={`/admin/orders/${order.id}`}
+                    api={`/orders/${order.id}`}
                     message="Order deleted successfully"
                     fetch={fetchOrders}
                   />
@@ -223,7 +222,7 @@ const OrdersPage = () => {
             </div>
             <div className="px-4 py-4 md:px-6 xl:px-7.5">
               <p className="text-white">
-                <strong>Order Number:</strong> {selectedOrder.order_number}
+                <strong>Order Number:</strong> {selectedOrder.id}
               </p>
               <p className="text-white">
                 <strong>Customer Name:</strong> {selectedOrder.name}
@@ -235,22 +234,21 @@ const OrdersPage = () => {
                 <strong>Phone:</strong> {selectedOrder.phone}
               </p>
               <p className="text-white">
-                <strong>Shipping Address:</strong>{" "}
-                {selectedOrder.shipping_address_line1},{" "}
-                {selectedOrder.shipping_city}, {selectedOrder.shipping_country},{" "}
-                {selectedOrder.shipping_postal_code}
+                <strong>Shipping Address:</strong> {selectedOrder.address},{" "}
+                {selectedOrder.city}, {selectedOrder.country},{" "}
+                {selectedOrder.postalCode}
               </p>
               <p className="text-white">
-                <strong>Total Amount:</strong> ${selectedOrder.total_amount}
+                <strong>Total Amount:</strong> ${selectedOrder.total}
               </p>
               <p className="text-white">
-                <strong>Payment Method:</strong> {selectedOrder.payment_method}
+                <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
               </p>
               <p className="text-white">
                 <strong>Order Items:</strong>
               </p>
               <ul className="text-white">
-                {selectedOrder.items.map((item) => (
+                {selectedOrder.order_items.map((item) => (
                   <li key={item.product_id}>
                     {item.product.title} (Quantity: {item.quantity})
                   </li>

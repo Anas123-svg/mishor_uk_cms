@@ -1,21 +1,3 @@
-type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  address: string;
-  postal_code: string;
-  city: string;
-  country: string;
-  mobile_phone_number: string;
-  email: string;
-  confirmation_of_knowledge: boolean;
-  referral_code: string | null;
-  carts: any[];
-  wishlists: any[];
-  created_at: string;
-  updated_at: string;
-};
-
 type Permissions = {
   Customers: Boolean;
   Products: Boolean;
@@ -33,22 +15,46 @@ type Admin = {
   updated_at: string;
 };
 
-type Review = {
-  _id: string;
-  name: string;
+type Cart = {
+  product: Product;
+  quantity: number;
+};
+
+type Wishlist = {
+  product: Product;
+};
+
+type User = {
+  id: string;
   email: string;
+  password: string;
+  name: string;
+  phone: string;
+  address: string;
+  carts: Cart[];
+  wishlists: Wishlist[];
+  created_at: string;
+  updated_at: string;
+};
+
+type Review = {
+  id: number;
+  product_id: number;
+  user_id: number;
+  reviewer_name: string;
+  user_email: string;
   rating: number;
   title: string;
-  comment: string;
-  createdAt: string;
-  updatedAt: string;
+  review: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type Product = {
   id: number;
   title: string;
   price: number;
-  discountedPrice: number | null;
+  discountedPrice: number;
   images: string[];
   category: string;
   inStock: boolean;
@@ -67,95 +73,37 @@ type Category = {
   updated_at: string;
 };
 
-type Blog = {
-  id: number;
-  author: string;
-  author_image: string;
-  title: string;
-  title_image: string;
-  description: string;
-  content: string;
-  category_id: string;
-  category_name: string;
-  time_to_read: string;
-  created_at: string;
-  updated_at: string;
-  comments: any[];
-};
-
-type BlogCategory = {
-  id: number;
-  name: string;
-  blogs: number;
-  created_at: string;
-  updated_at: string;
-};
-
-type Event = {
-  id: number;
-  date: string;
-  title: string;
-  description: string;
-  image: string;
-  created_at: string;
-  updated_at: string;
-};
+enum OrderStatus {
+  PENDING = "pending",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}
 
 type Order = {
   id: number;
-  order_number: string;
-  name: string;
+  address: string;
+  city: string;
+  country: string;
+  postalCode: string;
+  paymentMethod: string;
+  delivery: number;
   email: string;
+  name: string;
   phone: string;
-  shipping_address_line1: string;
-  shipping_city: string;
-  shipping_country: string;
-  shipping_postal_code: string;
-  payment_method: string;
-  total_amount: string;
-  status: string;
-  items: [
+  status: OrderStatus;
+  subTotal: number;
+  total: number;
+  order_items: [
     {
+      product: Product;
       product_id: number;
-      product: Product;
-      quantity: number;
-    },
-  ];
-  created_at: string;
-};
-
-type GuestOrder = {
-  id: number;
-  order_number: string;
-  guest_name: string;
-  guest_email: string;
-  guest_phone: string;
-  shipping_address_line1: string;
-  shipping_city: string;
-  shipping_country: string;
-  shipping_postal_code: string;
-  payment_method: string;
-  total_amount: string;
-  status: string;
-  products: [
-    {
-      product: Product;
       quantity: number;
     },
   ];
   created_at: string;
   updated_at: string;
+  user_id: number;
 };
 
-export type {
-  User,
-  Product,
-  Category,
-  Blog,
-  BlogCategory,
-  Event,
-  Admin,
-  Permissions,
-  Order,
-  GuestOrder,
-};
+export type { User, Product, Category, Admin, Permissions, Order };

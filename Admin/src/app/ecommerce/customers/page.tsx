@@ -2,22 +2,24 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { FaEye, FaTrashAlt, FaEdit } from "react-icons/fa";
-import Image from "next/image";
 import { User } from "@/types";
 import axios from "axios";
 import Delete from "@/components/Delete";
+import useAuthStore from "@/store/authStore";
 
 const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [customerData, setCustomerData] = useState<User[]>([]);
+  const { token } = useAuthStore();
 
   const fetchCustomers = async () => {
     try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/getusers`,
-      );
-      setCustomerData(res.data.users);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCustomerData(res.data.data);
     } catch (error) {
       console.error("Failed to fetch customers:", error);
     }
@@ -29,8 +31,7 @@ const Customers = () => {
 
   const filteredCustomers = customerData.filter(
     (customer) =>
-      customer.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
@@ -62,23 +63,16 @@ const Customers = () => {
                   className="rounded border border-stroke p-4 shadow-sm dark:border-strokedark dark:bg-meta-4"
                 >
                   <p className="text-lg font-semibold text-black dark:text-white">
-                    {customer.first_name} {customer.last_name}
+                    {customer.name}
                   </p>
                   <p className="text-black dark:text-white">
                     <strong>Email:</strong> {customer.email}
                   </p>
                   <p className="text-black dark:text-white">
-                    <strong>Phone:</strong> {customer.mobile_phone_number}
+                    <strong>Phone:</strong> {customer.phone}
                   </p>
                   <p className="text-black dark:text-white">
-                    <strong>Address:</strong> {customer.address},{" "}
-                    {customer.city}
-                  </p>
-                  <p className="text-black dark:text-white">
-                    <strong>Country:</strong> {customer.country}
-                  </p>
-                  <p className="text-black dark:text-white">
-                    <strong>Postal Code:</strong> {customer.postal_code}
+                    <strong>Address:</strong> {customer.address}
                   </p>
                   <div className="flex justify-end">
                     <Delete
@@ -113,15 +107,6 @@ const Customers = () => {
                   <th className="px-4 py-4 font-medium text-black dark:text-white">
                     Address
                   </th>
-                  <th className="px-4 py-4 font-medium text-black dark:text-white">
-                    City
-                  </th>
-                  <th className="px-4 py-4 font-medium text-black dark:text-white">
-                    Country
-                  </th>
-                  <th className="whitespace-nowrap px-4 py-4 font-medium text-black dark:text-white">
-                    Postal Code
-                  </th>
                   <th className="px-4 py-4 text-end font-medium text-black dark:text-white">
                     Actions
                   </th>
@@ -132,7 +117,7 @@ const Customers = () => {
                   <tr key={index} className="text-sm">
                     <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
                       <p className="text-black dark:text-white">
-                        {customer.first_name} {customer.last_name}
+                        {customer.name}
                       </p>
                     </td>
                     <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
@@ -142,27 +127,12 @@ const Customers = () => {
                     </td>
                     <td className="whitespace-nowrap border-b border-stroke px-4 py-4 dark:border-strokedark">
                       <p className="text-black dark:text-white">
-                        {customer.mobile_phone_number}
+                        {customer.phone}
                       </p>
                     </td>
                     <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
                       <p className="text-black dark:text-white">
                         {customer.address}
-                      </p>
-                    </td>
-                    <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.city}
-                      </p>
-                    </td>
-                    <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.country}
-                      </p>
-                    </td>
-                    <td className="border-b border-stroke px-4 py-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">
-                        {customer.postal_code}
                       </p>
                     </td>
                     <td className="border-b border-stroke px-4 py-4 text-end dark:border-strokedark">

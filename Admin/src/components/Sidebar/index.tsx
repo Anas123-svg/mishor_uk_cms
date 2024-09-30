@@ -35,10 +35,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           label: "E-commerce",
           route: "#",
           children: [
-            // user?.permissions.Customers && {
-            //   label: "Customers",
-            //   route: "/ecommerce/customers",
-            // },
+            user?.permissions.Customers && {
+              label: "Customers",
+              route: "/ecommerce/customers",
+            },
             user?.permissions.Products && {
               label: "Products",
               route: "/ecommerce/products",
@@ -47,22 +47,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               label: "Product Categories",
               route: "/ecommerce/product-categories",
             },
-            // user?.permissions.Orders && {
-            //   label: "Orders",
-            //   route: "/ecommerce/orders",
-            // },
-            // user?.permissions.Orders && {
-            //   label: "Guest Orders",
-            //   route: "/ecommerce/guest-orders",
-            // },
-            // user?.permissions.Blogs && {
-            //   label: "Blogs",
-            //   route: "/ecommerce/blogs",
-            // },
-            // user?.permissions.Blogs && {
-            //   label: "Blog Categories",
-            //   route: "/ecommerce/blog-categories",
-            // },
+            user?.permissions.Orders && {
+              label: "Orders",
+              route: "/ecommerce/orders",
+            },
           ].filter(Boolean),
         },
         user?.role === "superadmin" && {
