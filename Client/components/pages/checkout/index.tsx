@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -78,8 +78,8 @@ const Checkout = () => {
         })),
         paymentMethod,
         subTotal: getTotalPrice(),
-        delivery: getTotalPrice() > 10000 ? 0 : 300,
-        total: getTotalPrice() + (getTotalPrice() > 10000 ? 0 : 300),
+        delivery: 20,
+        total: getTotalPrice() + 20,
       });
       toast.success("Order placed successfully");
       clearCart(user ? true : false, token);
@@ -91,11 +91,11 @@ const Checkout = () => {
     form.reset();
   }
 
-  // useEffect(() => {
-  //   if (items.length === 0) {
-  //     router.push("/");
-  //   }
-  // }, [items]);
+  useEffect(() => {
+    if (items.length === 0) {
+      router.push("/");
+    }
+  }, [items]);
 
   return (
     <div className="px-6 md:px-12 lg:px-24 pt-28 pb-10 min-h-screen">

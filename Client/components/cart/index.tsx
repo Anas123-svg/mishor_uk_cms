@@ -49,7 +49,7 @@ const CartComp = () => {
                   </div>
                   <div className="flex justify-between">
                     <p>Delivery</p>
-                    <p>£ 20"</p>
+                    <p>£ 20</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Total</p>
