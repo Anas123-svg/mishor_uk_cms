@@ -56,28 +56,6 @@ type Category = {
   updated_at: string;
 };
 
-type Blog = {
-  _id: string;
-  author: string;
-  authorImage: string;
-  title: string;
-  titleImage: string;
-  description: string;
-  category: string;
-  content: string;
-  timeToRead: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type BlogCategory = {
-  _id: string;
-  name: string;
-  blogs: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
 enum OrderStatus {
   PENDING = "pending",
   PROCESSING = "processing",
@@ -96,6 +74,8 @@ type Order = {
       quantity: number;
     }
   ];
+  created_at: string;
+  updated_at: string;
 };
 
 type FAQ = {
@@ -104,29 +84,6 @@ type FAQ = {
   answer: string;
 };
 
-type ContactInfo = {
-  email: string;
-  phone: string;
-  whatsapp: string;
-  address: string;
-  facebook: string;
-  instagram: string;
-  linkedin: string;
-  map: string;
-};
-
-export type {
-  Cart,
-  Wishlist,
-  User,
-  Product,
-  Review,
-  Category,
-  Blog,
-  FAQ,
-  BlogCategory,
-  ContactInfo,
-  Order,
-};
+export type { Cart, Wishlist, User, Product, Review, Category, FAQ, Order };
 
 export { OrderStatus };

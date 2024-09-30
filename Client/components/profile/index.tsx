@@ -99,13 +99,26 @@ const Profile = () => {
   async function onSubmitPassword(values: z.infer<typeof formSchemaPassword>) {
     setIsSubmittingPassword(true);
     try {
-      const response = await axios.post(`/api/update`, {
-        password: values.password,
-        newPassword: values.newPassword,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/update-password`,
+        {
+          previousPassword: values.password,
+          newPassword: values.newPassword,
+          newPassword_confirmation: values.confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success(response.data.message);
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      if (error && (error as any).response?.status === 400) {
+        toast.error("Invalid password");
+        return;
+      }
+      toast.error("An error occurred");
     } finally {
       setIsSubmittingPassword(false);
       formPassword.reset({
@@ -276,7 +289,7 @@ const Profile = () => {
           </Tabs>
         </div>
         <div className="md:w-1/2 h-full">
-          <h1 className="text-2xl font-mons mb-3">Previous Orders</h1>
+          <h1 className="text-2xl font-mons mb-3">Order History</h1>
           <div className="space-y-3 text-xs md:overflow-scroll md:h-[90%] scrollbar-none">
             {orders.filter((order) => order.status == "pending").length > 0 && (
               <h3 className="font-bold">Pending:</h3>
@@ -285,12 +298,12 @@ const Profile = () => {
               .filter((order) => order.status == "pending")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
-                      {new Date(order.createdAt).toLocaleDateString()}
+                      {new Date(order.created_at).toLocaleDateString()}
                     </h2>
-                  </div> */}
+                  </div>
                   <div>
                     <h2 className="font-bold">Items:</h2>
                     {order.items.map((item) => (
@@ -346,12 +359,12 @@ const Profile = () => {
               .filter((order) => order.status == "processing")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
-                      {new Date(order.createdAt).toLocaleDateString()}
+                      {new Date(order.created_at).toLocaleDateString()}
                     </h2>
-                  </div> */}
+                  </div>
                   <div>
                     <h2 className="font-bold">Items:</h2>
                     {order.items.map((item) => (
@@ -407,12 +420,12 @@ const Profile = () => {
               .filter((order) => order.status == "completed")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
-                      {new Date(order.createdAt).toLocaleDateString()}
+                      {new Date(order.created_at).toLocaleDateString()}
                     </h2>
-                  </div> */}
+                  </div>
                   <div>
                     <h2 className="font-bold">Items:</h2>
                     {order.items.map((item) => (
@@ -468,12 +481,12 @@ const Profile = () => {
               .filter((order) => order.status == "cancelled")
               .map((order) => (
                 <div key={order.order_id} className="border p-3 rounded-md">
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <h2 className="font-bold">Order Date</h2>
                     <h2 className="font-bold">
-                      {new Date(order.createdAt).toLocaleDateString()}
+                      {new Date(order.created_at).toLocaleDateString()}
                     </h2>
-                  </div> */}
+                  </div>
                   <div>
                     <h2 className="font-bold">Items:</h2>
                     {order.items.map((item) => (

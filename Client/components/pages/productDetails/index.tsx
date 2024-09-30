@@ -35,6 +35,7 @@ const ProductDetails = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/products/${id}`
       );
+      console.log(response.data);
       setProduct(response.data);
       setLoading(false);
     } catch (error) {

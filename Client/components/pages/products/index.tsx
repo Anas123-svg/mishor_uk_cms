@@ -170,10 +170,7 @@ const Products = () => {
                 <div className="flex flex-col gap-2 mt-auto">
                   <button
                     onClick={() => {
-                      setFilters({
-                        minPrice: minPrice,
-                        maxPrice: maxPrice,
-                      });
+                      getProducts();
                     }}
                     className="font-mons flex justify-center py-2 bg-secondary hover:bg-black text-white transition duration-200"
                   >
